@@ -1,520 +1,1758 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>RUSM Campus Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<html lang="en">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Seat, Faculty &amp; Room Capacity Model</title>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--navy:#1B3A5C;--blue:#2E75B6;--teal:#66C6C1;--mTeal:#9EDDD1;--lTeal:#CAEADF;--yel:#FFE885;--lYel:#FFF4C7;--gold:#FEB522;--peri:#98ACE5;--lBl:#B6CDEF;--coral:#F28D79;--pink:#EFB1D0;--gray:#C2C3C8;--dk:#404040;--bg:#F7F6F3;--card:#FFF;--bdr:#E2DED8;--mut:#888780;--cyan:#96EBF6;--r:10px}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dk);padding:1.2rem}
-.w{max-width:1200px;margin:0 auto}
-.hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem;flex-wrap:wrap;gap:6px}
-.hd h1{font-size:1.3rem;font-weight:700;color:var(--navy)}
-.hd-r{display:flex;gap:5px}
-.b{padding:5px 12px;border-radius:16px;border:none;font-size:.7rem;font-weight:600;cursor:pointer;font-family:inherit}
-.bn{background:var(--navy);color:#fff}.bn:hover{background:#2a5a8c}
-.bo{background:#fff;color:var(--navy);border:1.5px solid var(--bdr)}
-/* Tabs */
-.st{display:flex;gap:.3rem;margin-bottom:.5rem}
-.sb{padding:.3rem .8rem;border-radius:16px;border:1.5px solid var(--bdr);background:#fff;font-size:.7rem;cursor:pointer;color:var(--mut);font-weight:500;font-family:inherit}
-.sb.on{background:var(--blue);color:#fff;border-color:var(--blue)}
-.tabs{display:flex;gap:.3rem;margin-bottom:.7rem;flex-wrap:wrap}
-.tab{padding:.35rem .8rem;border-radius:20px;border:1.5px solid var(--bdr);background:#fff;font-size:.72rem;cursor:pointer;color:var(--mut);font-weight:500;font-family:inherit}
-.tab.on{background:var(--navy);color:#fff;border-color:var(--navy)}
-.tab:hover:not(.on){background:#eee}
-/* Metrics */
-.ms{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:.4rem;margin-bottom:.7rem}
-.m{background:#fff;border:1px solid var(--bdr);border-radius:var(--r);padding:.4rem .5rem;text-align:center}
-.mv{font-family:'DM Mono',monospace;font-size:.9rem;font-weight:600;color:var(--navy)}
-.ml{font-size:.58rem;color:var(--mut)}
-/* Layout */
-.ly{display:grid;grid-template-columns:120px 1fr;gap:1rem;align-items:start}
-.bw{position:sticky;top:.7rem}
-.blb{font-size:.58rem;font-family:'DM Mono',monospace;color:var(--mut);text-align:center;margin-bottom:.2rem;text-transform:uppercase}
-.bbx{width:100%;height:440px;position:relative;border-radius:var(--r);border:1.5px solid var(--bdr);background:#fff}
-.bsk{position:absolute;bottom:0;left:0;right:0;display:flex;flex-direction:column-reverse}
-.bs{width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.bs span{font-size:.52rem;font-weight:600;text-align:center;line-height:1.1;padding:1px 2px;pointer-events:none;color:rgba(44,44,42,.85)}
-.btg{position:absolute;left:-6px;right:-6px;border-top:2.5px dashed var(--navy);pointer-events:none}
-.btl{position:absolute;left:-6px;transform:translateX(-100%);font-size:.55rem;font-family:'DM Mono',monospace;color:var(--navy);font-weight:600;white-space:nowrap;top:-8px;padding-right:3px}
-.bsub{font-size:.6rem;font-family:'DM Mono',monospace;color:var(--mut);text-align:center;margin-top:.25rem}
-.bgsf{font-size:.68rem;font-family:'DM Mono',monospace;color:var(--navy);text-align:center;font-weight:500}
-.bntg{font-size:.55rem;font-family:'DM Mono',monospace;color:var(--blue);text-align:center}
-/* Table */
-.pt{width:100%;border-collapse:collapse;font-size:.68rem;background:#fff;border-radius:var(--r);overflow:hidden}
-.pt th{background:var(--navy);color:#fff;padding:5px 6px;font-weight:600;text-align:right;font-size:.63rem;white-space:nowrap}
-.pt th:nth-child(1),.pt th:nth-child(2){text-align:left}
-.pt td{padding:4px 6px;border-bottom:1px solid var(--bdr);text-align:right;font-family:'DM Mono',monospace;font-size:.65rem}
-.pt td:nth-child(1),.pt td:nth-child(2){text-align:left;font-family:'DM Sans',sans-serif}
-.pt tr.c{cursor:pointer}.pt tr.c:hover{filter:brightness(.95)}
-.pt tr.c td{font-weight:700;font-size:.7rem;border-bottom:2px solid rgba(0,0,0,.1)}
-.pt tr.r td{font-size:.63rem;color:#555}
-.pt tr.r.h{display:none}
-.pt tr.t td{font-weight:700;background:#1B3A5C;color:#fff;font-size:.7rem}
-.pt input[type=number]{width:46px;border:1px solid var(--bdr);border-radius:3px;padding:2px;font-family:'DM Mono',monospace;font-size:.63rem;text-align:right;color:var(--navy)}
-.pt input:focus{outline:2px solid var(--blue)}
-.pt .d{background:none;border:none;color:var(--coral);cursor:pointer;font-size:.63rem;padding:0 2px}
-.ex{display:inline-block;width:0;height:0;border-style:solid;vertical-align:middle}
-.ex-r{border-width:4px 0 4px 7px;border-color:transparent transparent transparent var(--navy)}
-.ex-d{border-width:7px 4px 0 4px;border-color:var(--navy) transparent transparent transparent}
-.af{display:flex;gap:4px;align-items:center;margin-top:4px;padding:4px;background:var(--bg);border-radius:5px;font-size:.65rem;flex-wrap:wrap}
-.af input,.af select{border:1px solid var(--bdr);border-radius:3px;padding:2px 3px;font-family:'DM Mono',monospace;font-size:.63rem}
-.af select{font-family:'DM Sans',sans-serif}
-/* Charts */
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
-.cx{background:#fff;border:1px solid var(--bdr);border-radius:var(--r);padding:10px}
-.ct{font-size:.78rem;font-weight:700;color:var(--navy);margin-bottom:6px}
-.cs{font-size:.58rem;color:var(--mut);margin-top:3px}
-/* Cost table */
-.kt{width:100%;border-collapse:collapse;font-size:.68rem;background:#fff;border-radius:var(--r);overflow:hidden;margin-top:8px}
-.kt th{background:var(--navy);color:#fff;padding:5px 6px;font-weight:600;text-align:right}
-.kt th:first-child{text-align:left}
-.kt td{padding:5px 6px;border-bottom:1px solid var(--bdr);text-align:right;font-family:'DM Mono',monospace}
-.kt td:first-child{text-align:left;font-family:'DM Sans',sans-serif;font-weight:500}
-.kt tr:nth-child(even){background:var(--bg)}
-.kt tr.a td{color:var(--navy);font-weight:700;background:#1B3A5C10}
-/* Scale */
-.sc{display:flex;gap:5px;align-items:center;font-size:.68rem;margin-bottom:6px}
-.sc select{border:1px solid var(--bdr);border-radius:3px;padding:2px;font-size:.68rem}
-.pb{overflow:auto;max-height:550px;border:1px solid var(--bdr);border-radius:var(--r);background:#fff}
-@media print{body{padding:0;background:#fff}.hd-r,.tabs,.st,.af,.sc,.b{display:none!important}.bw{position:static!important}.ly{display:block!important}.pb{max-height:none!important;overflow:visible!important}svg,table{page-break-inside:avoid}}
-/* Login */
-.login-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center}
-.login-box{background:#fff;border:1.5px solid var(--bdr);border-radius:12px;padding:2rem 2.5rem;width:340px;text-align:center;box-shadow:0 8px 40px rgba(27,58,92,.12)}
-.login-box h2{font-size:1.2rem;font-weight:700;color:var(--navy);margin-bottom:.3rem}
-.login-box p{font-size:.75rem;color:var(--mut);margin-bottom:1.2rem}
-.login-box input{width:100%;padding:10px 12px;border:1.5px solid var(--bdr);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;margin-bottom:.7rem;outline:none}
-.login-box input:focus{border-color:var(--blue)}
-.login-box .login-btn{width:100%;padding:10px;border-radius:8px;border:none;background:var(--navy);color:#fff;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;margin-top:.3rem}
-.login-box .login-btn:hover{background:#2a5a8c}
-.login-box .login-err{font-size:.72rem;color:var(--coral);margin-top:.5rem;min-height:1rem}
-footer{margin-top:1rem;font-size:.58rem;color:var(--mut);font-family:'DM Mono',monospace}
-</style></head><body>
-<div class="login-overlay" id="loginOverlay">
-  <div class="login-box">
-    <h2>RUSM Campus Dashboard</h2>
-    <p>Space Strategies &middot; Covista / Payette</p>
-    <input type="text" id="loginUser" placeholder="Username" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()">
-    <input type="password" id="loginPass" placeholder="Password" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()">
-    <button class="login-btn" onclick="doLogin()">Sign In</button>
-    <div class="login-err" id="loginErr"></div>
+:root{
+  --bg:#F8FAFC;--ink:#1E293B;--ink2:#64748B;--line:#E2E8F0;--line2:#CBD5E1;
+  --emerald-bg:#ECFDF5;--emerald-bd:#A7F3D0;--emerald-tx:#065F46;
+  --orange-bg:#FFF7ED;--orange-bd:#FED7AA;--orange-tx:#9A3412;
+  --amber-bg:#FFFBEB;--amber-bd:#FDE68A;--amber-tx:#92400E;
+  --sky-bg:#F0F9FF;--sky-bd:#BAE6FD;--sky-tx:#075985;
+  --violet-bg:#F5F3FF;--violet-bd:#DDD6FE;--violet-tx:#5B21B6;
+  --teal-bg:#F0FDFA;--teal-bd:#99F6E4;--teal-tx:#134E4A;
+  --rose-bg:#FFF1F2;--rose-bd:#FECDD3;--rose-tx:#9F1239;
+  --indigo-bg:#EEF2FF;--indigo-bd:#C7D2FE;--indigo-tx:#3730A3;
+  --sep-col:#1D4ED8;--jan-col:#0F766E;--may-col:#7E22CE;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:var(--ink);font-size:14px}
+.shell{max-width:1320px;margin:0 auto;padding:24px}
+header{border-bottom:2px solid var(--ink);padding-bottom:12px;margin-bottom:16px}
+h1{font-size:22px;font-weight:800;margin:0 0 4px}
+header p{font-size:13px;color:var(--ink2);margin:0}
+.hdr-tools{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.hdr-tools button,.hdr-tools label{padding:5px 12px;border:1px solid var(--line2);background:#fff;border-radius:5px;cursor:pointer;font-size:12px;font-weight:700;color:var(--ink)}
+.hdr-tools button:hover,.hdr-tools label:hover{background:#F1F5F9}
+.scenario-bar{display:flex;align-items:center;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.scen-tab-grip{padding:4px 5px 4px 7px;cursor:grab;color:#94A3B8;font-size:14px;line-height:1;user-select:none}
+.scen-tab-grip:active{cursor:grabbing}
+.scen-tab-wrap.dragging{opacity:0.4;cursor:grabbing}
+.scen-tab-wrap.drag-over{border-color:var(--accent);background:#DBEAFE;box-shadow:inset 2px 0 0 var(--accent)}
+.scen-tab-wrap{display:inline-flex;align-items:center;border:1px solid var(--line2);border-radius:4px;overflow:hidden;background:#fff;margin-right:4px}
+.scen-tab-wrap.active{border-color:var(--accent);background:#EFF6FF}
+.scen-tab-label{border:none;background:transparent;padding:6px 10px;cursor:pointer;font-size:13px;font-weight:600;color:var(--ink2)}
+.scen-tab-wrap.active .scen-tab-label{color:var(--ink);font-weight:800}
+.scen-tab-del{border:none;border-left:1px solid var(--line2);background:transparent;padding:4px 7px;cursor:pointer;font-size:13px;color:#94A3B8;line-height:1}
+.scen-tab-del:hover{background:#FEE2E2;color:#DC2626}
+.scen-tab{padding:6px 14px;border:1px solid var(--line2);background:#fff;border-radius:20px;cursor:pointer;font-size:12px;font-weight:600;color:var(--ink2)}
+.scen-tab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.scen-tab:hover:not(.active){background:#F1F5F9}
+.scen-add{padding:6px 14px;border:1px dashed var(--line2);background:transparent;border-radius:20px;cursor:pointer;font-size:12px;font-weight:600;color:var(--ink2)}
+.scen-dup{border-color:#6366F1;color:#6366F1}
+.scen-dup:hover{background:#EEF2FF}
+.scen-name-inp{font-size:13px;font-weight:700;border:1px solid var(--line2);border-radius:5px;padding:4px 8px;width:160px}
+.card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:16px;margin-bottom:16px}
+.card h2{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;margin:0 0 10px;color:var(--ink)}
+.toggle-btn{padding:4px 12px;border:1px solid var(--line2);background:#fff;border-radius:4px;cursor:pointer;font-size:11px;font-weight:700;color:var(--ink2)}
+.toggle-btn.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.assume-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.assume-box{border-radius:6px;padding:10px;border:1px solid}
+.assume-box.emerald{background:var(--emerald-bg);border-color:var(--emerald-bd)}
+.assume-box.orange{background:var(--orange-bg);border-color:var(--orange-bd)}
+.assume-box.amber{background:var(--amber-bg);border-color:var(--amber-bd)}
+.assume-box.sky{background:var(--sky-bg);border-color:var(--sky-bd)}
+.assume-box.violet{background:var(--violet-bg);border-color:var(--violet-bd)}
+.assume-box.teal{background:var(--teal-bg);border-color:var(--teal-bd)}
+.assume-box.rose{background:var(--rose-bg);border-color:var(--rose-bd)}
+.assume-box.indigo{background:var(--indigo-bg);border-color:var(--indigo-bd)}
+.assume-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink2);margin-bottom:7px}
+.assume-row{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;margin-bottom:5px}
+.assume-row input{width:60px;text-align:right;border:1px solid var(--line2);border-radius:4px;padding:2px 5px;font-size:11.5px}
+.note{font-size:10px;color:#94A3B8;font-style:italic;margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:right;padding:5px 6px;font-size:10px;text-transform:uppercase;letter-spacing:.3px;color:var(--ink2);border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+td{padding:4px 6px;border-bottom:1px solid #F1F5F9}
+td input{width:100%;border:1px solid var(--line2);border-radius:3px;padding:3px 5px;font-size:12px;text-align:right}
+td input.name-inp{text-align:left}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+.col-large{color:var(--emerald-tx)}
+.col-medium{color:var(--orange-tx)}
+.col-small{color:var(--amber-tx)}
+.col-indep{color:var(--sky-tx)}
+.col-derived{color:#94A3B8;font-style:italic}
+.col-sep{color:var(--sep-col)}
+.col-jan{color:var(--jan-col)}
+.col-may{color:var(--may-col)}
+.col-max{color:var(--ink);font-weight:700}
+.del-btn{background:none;border:none;color:#FCA5A5;cursor:pointer;font-size:12px}
+.del-btn:hover{color:#DC2626}
+.add-btn{background:var(--ink);color:#fff;border:none;padding:5px 12px;border-radius:5px;font-size:12px;font-weight:700;cursor:pointer;margin-top:8px}
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px}
+.result-row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0}
+.result-row.bold .rlabel{font-weight:700;color:var(--ink)}
+.result-row.bold .rvalue{font-size:16px;font-weight:800}
+.rlabel{font-size:13px;color:#475569}
+.rvalue{font-size:13px;font-weight:700;display:inline-block;min-width:80px;text-align:right;font-variant-numeric:tabular-nums}
+.rsub{font-size:10px;color:#94A3B8;margin-left:6px}
+.divider{border-top:1px solid #F1F5F9;margin:7px 0}
+.fte-box{margin-top:10px;background:var(--violet-bg);border:1px solid var(--violet-bd);border-radius:6px;padding:12px}
+.fte-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--violet-tx)}
+.fte-value{font-size:28px;font-weight:900;color:#4C1D95;margin-top:2px}
+.fte-sub{font-size:10px;color:#7C3AED;margin-top:1px}
+.fte-staff{margin-top:8px;padding-top:8px;border-top:1px solid var(--violet-bd)}
+.fte-staff-value{font-size:22px;font-weight:800;color:#3730A3}
+.bigstat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.bigstat{border-radius:7px;padding:10px;border:1px solid}
+.bigstat.emerald{background:var(--emerald-bg);border-color:var(--emerald-bd)}
+.bigstat.orange{background:var(--orange-bg);border-color:var(--orange-bd)}
+.bigstat.amber{background:var(--amber-bg);border-color:var(--amber-bd)}
+.bigstat.sky{background:var(--sky-bg);border-color:var(--sky-bd)}
+.bigstat.teal{background:var(--teal-bg);border-color:var(--teal-bd)}
+.bigstat.rose{background:var(--rose-bg);border-color:var(--rose-bd)}
+.bigstat.indigo{background:var(--indigo-bg);border-color:var(--indigo-bd)}
+.bigstat-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;opacity:.7}
+.bigstat-value{font-size:18px;font-weight:800;margin-top:2px}
+.room-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.room-card{border-radius:7px;padding:12px;border:1px solid}
+.room-card.emerald{background:var(--emerald-bg);border-color:var(--emerald-bd)}
+.room-card.orange{background:var(--orange-bg);border-color:var(--orange-bd)}
+.room-card.amber{background:var(--amber-bg);border-color:var(--amber-bd)}
+.room-card.sky{background:var(--sky-bg);border-color:var(--sky-bd)}
+.room-card.teal{background:var(--teal-bg);border-color:var(--teal-bd)}
+.room-card.rose{background:var(--rose-bg);border-color:var(--rose-bd)}
+.room-card.indigo{background:var(--indigo-bg);border-color:var(--indigo-bd)}
+.room-card-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px}
+.room-card.emerald .room-card-title{color:var(--emerald-tx)}
+.room-card.orange .room-card-title{color:var(--orange-tx)}
+.room-card.amber .room-card-title{color:var(--amber-tx)}
+.room-card.sky .room-card-title{color:var(--sky-tx)}
+.room-card.teal .room-card-title{color:var(--teal-tx)}
+.room-card.rose .room-card-title{color:var(--rose-tx)}
+.room-card.indigo .room-card-title{color:var(--indigo-tx)}
+.room-inp-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;margin-bottom:4px}
+.room-inp-row input{width:58px;text-align:right;border:1px solid var(--line2);border-radius:3px;padding:2px 4px;font-size:11px}
+.room-demand{font-size:10px;color:#64748B;margin:6px 0 3px;padding-top:6px;border-top:1px solid rgba(0,0,0,.06)}
+.room-curr-prev{margin-top:8px}
+.room-curr-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#94A3B8;margin-bottom:1px}
+.room-curr-value{font-size:22px;font-weight:900;line-height:1}
+.room-card.emerald .room-curr-value,.room-card.emerald .rvc{color:#064E3B}
+.room-card.orange .room-curr-value,.room-card.orange .rvc{color:#7C2D12}
+.room-card.amber .room-curr-value,.room-card.amber .rvc{color:#78350F}
+.room-card.sky .room-curr-value,.room-card.sky .rvc{color:#0C4A6E}
+.room-card.teal .room-curr-value,.room-card.teal .rvc{color:#134E4A}
+.room-card.rose .room-curr-value,.room-card.rose .rvc{color:#9F1239}
+.room-card.indigo .room-curr-value,.room-card.indigo .rvc{color:#3730A3}
+.room-curr-seats{font-size:11px;font-weight:600;color:#475569;margin-top:1px}
+.room-curr-nsf{font-size:10px;color:#94A3B8;margin-top:2px}
+.room-prev-row{margin-top:7px;padding-top:7px;border-top:1px dashed rgba(0,0,0,.08)}
+.room-prev-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#CBD5E1;margin-bottom:1px}
+.room-prev-value{font-size:15px;font-weight:700;color:#94A3B8;text-decoration:line-through}
+.room-prev-seats,.room-prev-nsf{font-size:10px;color:#CBD5E1}
+/* Vacancy block */
+.vacancy-block{margin-top:8px;padding:8px;background:rgba(0,0,0,.04);border-radius:5px;border:1px solid rgba(0,0,0,.06)}
+.vacancy-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#94A3B8;margin-bottom:4px}
+.vacancy-rooms{font-size:10px;min-width:44px;text-align:right}
+.vacancy-row{display:flex;align-items:center;font-size:10px;margin-bottom:3px}
+.vacancy-cohort{font-weight:700;min-width:72px;flex-shrink:0}
+.vacancy-cohort.sep{color:var(--sep-col)}
+.vacancy-cohort.jan{color:var(--jan-col)}
+.vacancy-cohort.may{color:var(--may-col)}
+.vacancy-bar-wrap{flex:1;margin:0 8px;height:6px;background:#E2E8F0;border-radius:3px;overflow:hidden}
+.vacancy-bar-fill{height:100%;border-radius:3px;transition:width .2s}
+.vacancy-rooms{font-size:10px;font-weight:700;min-width:44px;text-align:right}
+/* NSF compare */
+.nsf-compare{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:4px;align-items:start}
+.nsf-col{display:flex;flex-direction:column;border-radius:7px;padding:12px;border:1px solid var(--line)}
+.nsf-col-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--ink2);margin-bottom:5px}
+.nsf-col-value{font-size:24px;font-weight:900;color:var(--ink)}
+.nsf-col-sub{font-size:10px;color:#94A3B8;margin-top:2px}
+.nsf-col.delta{background:var(--emerald-bg);border-color:var(--emerald-bd)}
+.nsf-col.delta.negative{background:#FEF2F2;border-color:#FECACA}
+.nsf-delta-value{font-size:24px;font-weight:900;color:#065F46}
+.nsf-col.delta.negative .nsf-delta-value{color:#991B1B}
+.nsf-delta-pct{font-size:18px;font-weight:800;color:#065F46;margin-left:8px}
+.nsf-col.delta.negative .nsf-delta-pct{color:#991B1B}
+.pct-bad{color:#DC2626;font-weight:700}
+.pct-ok{color:#94A3B8}
+.section-hdr{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--ink2);margin:14px 0 6px;padding-bottom:4px;border-top:1px solid var(--line);padding-top:12px}
+.footnote{font-size:11px;color:#94A3B8;line-height:1.6;margin-top:8px}
+/* Section group headers */
+.section-group{margin:20px 0 8px;display:flex;align-items:center;gap:10px}
+.section-group-label{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1.2px;color:var(--ink2);white-space:nowrap}
+.section-group-line{flex:1;height:1px;background:var(--line2)}
+/* Collapsible cards */
+.card-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;margin:-16px -16px 0;padding:12px 16px;border-radius:8px 8px 0 0}
+.card-header:hover{background:#F8FAFC}
+.card-header.open{margin-bottom:12px}
+.card-header h2{margin:0;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--ink)}
+.card-toggle{font-size:14px;color:var(--ink2);transition:transform .2s;line-height:1}
+.card-toggle.closed{transform:rotate(-90deg)}
+.card-body{overflow:hidden}
+.card-body.collapsed{display:none}
+/* Cohort legend */
+.cohort-legend{display:flex;gap:14px;font-size:11px;margin-bottom:8px}
+.cohort-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:-1px}
+</style>
+</head>
+<body>
+<div class="shell">
+<header>
+  <h1>Seat, Faculty &amp; Room Capacity Model</h1>
+  <p>Tri-cohort (Sep/Jan/May) demand model — all concurrent semesters. Room sizing based on peak cohort demand; vacancy analysis shows utilization in the lowest-demand cohort.</p>
+  <div class="hdr-tools">
+    <button onclick="exportStateJSON()">⤓ Export JSON</button>
+    <label>⤒ Import JSON<input id="importFileInput" type="file" accept=".json" style="display:none" onchange="importStateJSON(event)"></label>
+  </div>
+</header>
+
+<div class="scenario-bar" id="scenBar"></div>
+
+<!-- ── ASSUMPTIONS ─────────────────────────────────── -->
+<div class="section-group"><div class="section-group-label">Assumptions</div><div class="section-group-line"></div></div>
+
+<div class="card">
+  <div class="card-header open" onclick="toggleCard(this)">
+    <h2>Course &amp; Courseload Assumptions</h2>
+    <span class="card-toggle">▾</span>
+  </div>
+  <div class="card-body">
+    <div class="assume-grid" id="assumeGrid"></div>
+    <div class="note" style="margin-top:8px">40 hr student week · academic weeks editable above · sessions/weekday used directly in room quantity model</div>
   </div>
 </div>
-<div class="w" id="mainApp" style="display:none">
-<div class="hd"><h1>RUSM Campus Dashboard</h1><div class="hd-r">
-<button class="b bo" onclick="window.print()">Print / PDF</button>
-<button class="b bn" id="sv" onclick="doSave()">Export JSON</button></div></div>
-<div class="st" id="st"></div>
-<div class="tabs" id="tabs"></div>
-<div class="ms" id="ms"></div>
-<div id="ct"></div>
-<footer id="ft"></footer>
+
+<!-- ── MAJOR DRIVERS ─────────────────────────────── -->
+<div class="section-group"><div class="section-group-label">Major Drivers</div><div class="section-group-line"></div></div>
+
+<div class="card">
+  <div class="card-header open" onclick="toggleCard(this)">
+    <h2>Students per Semester</h2>
+    <span class="card-toggle">▾</span>
+  </div>
+  <div class="card-body">
+    <div class="cohort-legend">
+      <span><span class="cohort-dot" style="background:var(--sep-col)"></span><b style="color:var(--sep-col)">September</b> cohort</span>
+      <span><span class="cohort-dot" style="background:var(--jan-col)"></span><b style="color:var(--jan-col)">January</b> cohort</span>
+      <span><span class="cohort-dot" style="background:var(--may-col)"></span><b style="color:var(--may-col)">May</b> cohort</span>
+      <span><span class="cohort-dot" style="background:var(--ink)"></span><b>Max</b> drives room sizing</span>
+    </div>
+    <div style="overflow-x:auto"><table>
+      <thead><tr>
+        <th style="min-width:150px">Semester Stage</th>
+        <th class="col-sep">Sep Students</th>
+        <th class="col-jan">Jan Students</th>
+        <th class="col-may">May Students</th>
+        <th class="col-max">Max (used)</th>
+        <th></th>
+      </tr></thead>
+      <tbody id="stuBody"></tbody>
+    </table></div>
+    <button class="add-btn" onclick="addSemester()">+ Row</button>
+  </div>
 </div>
+
+<div class="card">
+  <div class="card-header open" onclick="toggleCard(this)">
+    <div style="display:flex;align-items:center;gap:10px;flex:1">
+      <h2 style="margin:0">Curriculum Breakdown</h2>
+      <div style="display:flex;gap:5px;margin-left:8px" onclick="event.stopPropagation()">
+        <button class="toggle-btn on" id="btnSimple" onclick="setInputMode('simple')">Simple</button>
+        <button class="toggle-btn" id="btnDetailed" onclick="setInputMode('detailed')">Detailed</button>
+      </div>
+    </div>
+    <span class="card-toggle">▾</span>
+  </div>
+  <div class="card-body">
+    <div style="overflow-x:auto" id="curriculumArea"></div>
+  </div>
+</div>
+
+<!-- ── SEAT HOURS AND FACULTY HOURS ──────────────── -->
+<div class="section-group"><div class="section-group-label">Seat Hours &amp; Faculty Hours</div><div class="section-group-line"></div></div>
+
+<div class="card">
+  <div class="card-header open" onclick="toggleCard(this)">
+    <h2>Seat-Hours — Full Semester (<span id="weeksLabel">13</span> weeks) · Peak Cohort</h2>
+    <span class="card-toggle">▾</span>
+  </div>
+  <div class="card-body">
+    <div class="bigstat-grid" id="semesterTotalsBox"></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header open" onclick="toggleCard(this)">
+    <h2>Seat-Hours — Typical Week · Peak Cohort</h2>
+    <span class="card-toggle">▾</span>
+  </div>
+  <div class="card-body">
+    <div class="note" style="margin-bottom:10px">Weekly seat-hours by category for the peak cohort. Proportional to curriculum weight × enrollment.</div>
+    <div class="bigstat-grid" id="weeklyTotalsBox"></div>
+    <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line)" id="sectionsNeededBox"></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header open" onclick="toggleCard(this)">
+    <h2>Faculty Hours — Typical Week · Peak Cohort</h2>
+    <span class="card-toggle">▾</span>
+  </div>
+  <div class="card-body">
+    <div id="facultyHoursBox"></div>
+  </div>
+</div>
+
+<!-- ── EXAM SIZING ─────────────────────────────────── -->
+<div class="section-group"><div class="section-group-label">Exam Sizing</div><div class="section-group-line"></div></div>
+
+<div class="card" id="osceCard">
+  <div class="card-header open" onclick="toggleCard(this)">
+    <h2>OSCE Exam Sizing Model</h2>
+    <span class="card-toggle">▾</span>
+  </div>
+  <div class="card-body">
+    <div class="note" style="margin-bottom:12px">Models SP room demand for OSCE exams in Semesters 4, 5, and 6. Students rotate through stations simultaneously — 1 student per room per station. Total rooms = sum across active semesters.</div>
+    <div class="assume-grid" style="margin-bottom:14px">
+      <div class="assume-box violet">
+        <div class="assume-label">Circuit Structure</div>
+        <div class="assume-row"><span>Stations per circuit</span><input type="number" id="inp_osce_stations" value="10" min="1" oninput="setInp('osce_stations',this.value)"></div>
+        <div class="note">= students examined per session per circuit</div>
+      </div>
+      <div class="assume-box emerald">
+        <div class="assume-label">Scheduling</div>
+        <div class="assume-row"><span>Sessions per day</span><input type="number" id="inp_osce_sessions_per_day" value="2" min="1" oninput="setInp('osce_sessions_per_day',this.value)"></div>
+        <div class="assume-row"><span>Exam window (weekdays)</span><input type="number" id="inp_osce_exam_days" value="10" min="1" oninput="setInp('osce_exam_days',this.value)"></div>
+        <div class="note">10 weekdays = 2-week exam window</div>
+      </div>
+      <div class="assume-box sky">
+        <div class="assume-label">Include Semester (1=yes, 0=no)</div>
+        <div class="assume-row"><span>Sem 4</span><input type="number" id="inp_osce_sem4" value="1" min="0" max="1" oninput="setInp('osce_sem4',this.value)"></div>
+        <div class="assume-row"><span>Sem 5</span><input type="number" id="inp_osce_sem5" value="1" min="0" max="1" oninput="setInp('osce_sem5',this.value)"></div>
+        <div class="assume-row"><span>Sem 6 (Capstone)</span><input type="number" id="inp_osce_sem6" value="1" min="0" max="1" oninput="setInp('osce_sem6',this.value)"></div>
+      </div>
+    </div>
+    <div id="osceResultBox"></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header open" onclick="toggleCard(this)">
+    <h2>NBME Exam Sizing Model</h2>
+    <span class="card-toggle">▾</span>
+  </div>
+  <div class="card-body">
+    <div class="note" style="margin-bottom:12px">Models testing center seat demand for USMLE Step 1. Students are scheduled individually across a multi-day window — info-sharing is prevented by the randomised question bank. Seats needed = students ÷ exam window days, adjusted for accommodation.</div>
+    <div class="assume-grid" style="margin-bottom:14px">
+      <div class="assume-box rose">
+        <div class="assume-label">Accommodation</div>
+        <div class="assume-row"><span>% needing accommodation</span><input type="number" id="inp_nbme_accom_pct" value="10" min="0" max="100" oninput="setInp('nbme_accom_pct',this.value)"></div>
+        <div class="note">Accommodation testing is separate; excluded from standard seat count</div>
+      </div>
+      <div class="assume-box emerald">
+        <div class="assume-label">Scheduling</div>
+        <div class="assume-row"><span>Exam window (weekdays)</span><input type="number" id="inp_nbme_exam_days" value="2" min="1" oninput="setInp('nbme_exam_days',this.value)"></div>
+      </div>
+      <div class="assume-box sky">
+        <div class="assume-label">Include Semester (1=yes, 0=no)</div>
+        <div class="assume-row"><span>Sem 5</span><input type="number" id="inp_nbme_sem5" value="1" min="0" max="1" oninput="setInp('nbme_sem5',this.value)"></div>
+        <div class="assume-row"><span>Sem 6 (Capstone)</span><input type="number" id="inp_nbme_sem6" value="0" min="0" max="1" oninput="setInp('nbme_sem6',this.value)"></div>
+      </div>
+    </div>
+    <div id="nbmeResultBox"></div>
+  </div>
+</div>
+
+<!-- ── QUANTITY MODELING ───────────────────────────── -->
+<div class="section-group"><div class="section-group-label">Quantity Modeling</div><div class="section-group-line"></div></div>
+
+<div class="card">
+  <div class="card-header open" onclick="toggleCard(this)">
+    <h2>Faculty — FTE &amp; Staff</h2>
+    <span class="card-toggle">▾</span>
+  </div>
+  <div class="card-body">
+    <div id="facultyFTEBox"></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header open" onclick="toggleCard(this)">
+    <h2>Administration — Staff &amp; Space</h2>
+    <span class="card-toggle">▾</span>
+  </div>
+  <div class="card-body">
+    <div id="adminStaffBox"></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header open" onclick="toggleCard(this)">
+    <h2>Academic Rooms</h2>
+    <span class="card-toggle">▾</span>
+  </div>
+  <div class="card-body">
+    <div class="note" style="margin-bottom:8px">Sized on <b>peak</b> (max) cohort demand. Vacancy analysis shows utilization in the lowest-demand cohort.</div>
+    <div id="roomModelBox"></div>
+  </div>
+</div>
+
+<!-- ── OVERALL NSF COMPARISON ─────────────────────── -->
+<div class="section-group"><div class="section-group-label">Overall NSF Comparison</div><div class="section-group-line"></div></div>
+
+<div class="card">
+  <div class="card-header open" onclick="toggleCard(this)">
+    <h2>NSF Comparison</h2>
+    <span class="card-toggle">▾</span>
+  </div>
+  <div class="card-body">
+    <div class="note" style="margin-bottom:8px">Academic program NSF — Boston Workshop baseline vs calculated current (sum of all 7 room type NSF totals).</div>
+    <div class="nsf-compare" id="nsfCompareBox"></div>
+    <div id="nsfExtRows"></div>
+    <div id="nsfTotalStackBox" style="margin-top:24px;padding-top:18px;border-top:1px solid var(--line)"></div>
+  </div>
+</div>
+
+<!-- Breakdown (keep at bottom) -->
+<div class="card">
+  <div class="card-header open" onclick="toggleCard(this)">
+    <h2>Per-Semester Breakdown — Curriculum %</h2>
+    <span class="card-toggle">▾</span>
+  </div>
+  <div class="card-body">
+    <div style="overflow-x:auto"><table><thead id="breakdownHead"></thead><tbody id="breakdownBody"></tbody></table></div>
+    <div class="footnote">Seat-hours = students × 40hr week × curriculum %. Room counts and faculty derived via session length → seat-sessions → capacity/fill rate.</div>
+  </div>
+</div>
+
+
+
+</div>
+
 <script>
-var BMETA={"academic":{"grossing":1.65,"target":217500,"label":"Academic Building","unit":"NASF"},"clinic":{"grossing":2.05,"target":15000,"label":"Outpatient Clinic","unit":"NASF"},"residence":{"grossing":1.5,"target":78000,"label":"Student Residence","unit":"NASF"},"townhomes":{"grossing":1.0,"target":102300,"label":"Faculty Townhomes","unit":"GSF"}};
-var SCENARIOS=[{"label":"Scenario A","rooms":{"academic":[["1.0","Modular Lecture & TBL","#CAEADF",[[1,"Room A1",1,3850,175,56,80,850],[2,"Room A2 Swing",1,3850,175,56,84,850],[3,"Room A3",1,3850,175,56,80,850],[4,"Room BC1",1,3850,175,44,72,850],[5,"Room BC2 Swing",1,3850,175,36,68,850],[6,"Room BC3",1,3850,175,36,68,850],[7,"AV Control",3,200,0,40,70,1000],[8,"Lecturer Prep",4,150,0,30,55,575]]],["2.0","Small Group & PBL","#FFE885",[[9,"PBL Rooms",30,250,12,43,64,675],[10,"Seminar Rooms",6,550,24,44,70,625],[11,"Flexible Classroom",3,1800,60,30,80,675]]],["3.0","Digital Anatomy & Labs","#9EDDD1",[[12,"Digital Anatomy Lab",1,3500,82,50,70,975],[13,"Histology + Science",1,3600,40,44,64,800],[14,"Anatomy Studio",1,1500,0,35,55,700]]],["4.0","Clinical Skills & Sim","#EFB1D0",[[15,"Skills Labs",4,1600,24,44,80,875],[16,"Sim Suites",4,400,1,30,60,1150],[17,"Sim Control",4,150,0,30,60,1100],[18,"Debrief Rooms",12,300,12,26,46,650],[19,"SP Exam Rooms",30,120,1,16,80,900],[20,"SP Control",1,1500,0,16,80,950],[21,"SP Lounge",1,700,0,20,40,550],[22,"Sim Storage",1,2000,0,10,20,450]]],["5.0","Community","#CAEADF",[[23,"Data/Viz Studio",1,1200,0,25,50,750]]],["6.0","Student Learning","#FFE885",[[24,"Student Commons",1,7300,0,79,93,550],[25,"Quiet Study",1,11000,0,71,89,500],[26,"Lockers/Wellness",1,3580,0,60,85,400],[27,"Student Org Suite",1,600,0,30,55,500],[28,"Testing Lab",1,2800,80,36,90,700]]],["7.0","Faculty Offices","#B6CDEF",[[29,"Private Offices",70,120,1,45,65,600],[30,"Chair Offices",8,180,1,40,60,650],[31,"Open Workstations",12,64,1,35,55,550],[32,"Conf Room (12)",4,400,12,40,65,625],[33,"Conf Room (20)",1,600,20,40,65,625],[34,"Faculty Lounge",1,950,0,30,50,500],[35,"Mail/Copy",2,300,0,25,40,400]]],["8.0","Administration","#B6CDEF",[[36,"Dean's Suite",1,1100,0,45,60,650],[37,"Med Ed Office",1,900,0,45,60,600],[38,"Student Affairs",1,700,0,40,55,600],[39,"Registrar",1,400,0,35,50,550],[40,"Admin Workstations",8,64,1,40,60,500],[41,"Meeting Rooms",3,120,4,25,45,500],[42,"Board Room",1,650,20,20,50,750]]],["9.0","IT & AV","#C2C3C8",[[43,"Server/MDF",1,700,0,95,95,950],[44,"IDF Closets",5,100,0,95,95,600],[45,"AV Studio",1,800,0,30,55,900],[46,"IT Help Desk",1,500,0,40,60,600],[47,"IT Offices",5,120,1,40,60,550]]],["10.0","Building Support","#C2C3C8",[[48,"Entry/Reception",1,500,0,70,90,600],[49,"Restrooms",1,3800,0,50,80,550],[50,"MEP Rooms",1,4500,0,95,95,400],[51,"Security",1,400,0,40,60,400],[52,"Custodial",7,80,0,30,50,350],[53,"Loading/Receiving",1,1000,0,20,40,350],[54,"Storage",6,500,0,20,40,350],[55,"Lactation",2,100,0,15,30,400],[56,"First Aid",1,200,0,10,30,500]]]],"clinic":[["C1","Exam & Consultation","#96EBF6",[[1,"General Exam",14,120,1,45,75,750],[2,"Consultation",1,150,2,35,60,700],[3,"Triage Bays",2,80,1,50,80,600]]],["C2","Diagnostics","#B6CDEF",[[4,"POC Lab",1,300,0,40,65,850],[5,"Basic Imaging",1,400,0,30,55,950],[6,"Specimen Collection",1,120,1,35,60,700],[7,"Pharmacy",1,270,0,40,60,800]]],["C3","Urgent Care","#52D1ED",[[8,"UC Entry/Triage",1,200,0,50,80,650],[9,"Exam Bays",4,120,1,40,70,750],[10,"Procedure Bay",1,250,1,30,55,850]]],["C4","Patient Support","#FFF4C7",[[11,"Indoor Waiting",1,600,0,70,90,550],[12,"Outdoor Waiting",1,400,0,60,85,350],[13,"Health Ed Alcove",1,200,0,25,45,500],[14,"Patient WC",1,270,0,50,80,550]]],["C5","Med Education","#9EDDD1",[[15,"Student Workroom",1,350,8,43,65,600],[16,"Preceptor Offices",2,120,1,40,60,600],[17,"Student Lockers",1,110,0,60,85,400]]],["C6","Staff & Ops","#98ACE5",[[18,"Provider Offices",3,120,1,45,65,600],[19,"Clinic Manager",1,120,1,40,60,600],[20,"Staff Break",1,200,0,55,75,450]]],["C7","Building Support","#C2C3C8",[[21,"IT Closet",1,80,0,95,95,800],[22,"Custodial",1,80,0,30,50,350],[23,"Storage/Supply",1,200,0,25,40,350],[24,"Staff WC",1,170,0,50,80,550]]]],"residence":[["R1","Single Rooms","#FFCDAE",[[1,"Single Student",70,220,1,85,95,480]]],["R2","Double Rooms","#FFAF7D",[[2,"Double Student",40,340,2,85,95,450]]],["R3","Amenities","#F28D79",[[3,"Rooftop/Pool",1,3500,0,40,70,350],[4,"Kitchen/Dining",1,2500,0,65,85,550],[5,"Fitness",1,2800,0,50,80,500],[6,"Multi-Purpose",1,2400,0,30,60,450],[7,"Group Study",6,280,6,55,80,500],[8,"Quiet Lounge",1,440,0,65,85,450]]],["R4","Floor Common","#FFE885",[[9,"Floor Lounge",6,500,0,55,75,400],[10,"Floor Study",6,250,4,50,75,450],[11,"Laundry",3,200,0,40,60,350]]],["R5","Admin & Ops","#FF6A4F",[[12,"RA Apartments",2,350,1,90,95,450],[13,"Mgmt Office",1,200,1,40,60,550],[14,"Reception/Mail",1,200,0,50,70,500]]],["R6","Building Support","#C2C3C8",[[15,"Lobby",1,600,0,70,90,550],[16,"MEP/Gen/Cistern",1,1200,0,95,95,380],[17,"Storage/Maint",1,600,0,25,40,350],[18,"Trash/Recycle",1,250,0,20,35,300],[19,"Common WC",1,260,0,50,80,500]]]],"townhomes":[["T1","1-BR Units","#CAEADF",[[1,"1-BR Townhome",54,750,1,90,95,360]]],["T2","2-BR Units","#9EDDD1",[[2,"2-BR Townhome",16,1000,2,90,95,340]]],["T3","4-BR Units","#66C6C1",[[3,"4-BR Townhome",16,1250,4,90,95,320]]],["T4","Community","#FFE885",[[4,"Pool/Clubhouse",1,2500,0,40,65,400],[5,"Playground",1,1500,0,30,55,300],[6,"BBQ/Social",1,1200,0,25,50,250]]],["T5","Site Infra","#C2C3C8",[[7,"Roads/Parking",1,12000,0,0,0,180],[8,"Utilities",1,4000,0,0,0,250],[9,"Landscaping",1,6600,0,0,0,120]]]]}},{"label":"Scenario B","rooms":{"academic":[["1.0","Modular Lecture & TBL","#CAEADF",[[1,"Room A1",1,3850,175,56,80,850],[2,"Room A2 Swing",1,3850,175,56,84,850],[3,"Room A3",1,3850,175,56,80,850],[4,"Room BC1",1,3850,175,44,72,850],[5,"Room BC2 Swing",1,3850,175,36,68,850],[6,"Room BC3",1,3850,175,36,68,850],[7,"AV Control",3,200,0,40,70,1000],[8,"Lecturer Prep",4,150,0,30,55,575]]],["2.0","Small Group & PBL","#FFE885",[[9,"PBL Rooms",30,250,12,43,64,675],[10,"Seminar Rooms",6,550,24,44,70,625],[11,"Flexible Classroom",3,1800,60,30,80,675]]],["3.0","Digital Anatomy & Labs","#9EDDD1",[[12,"Digital Anatomy Lab",1,3500,82,50,70,975],[13,"Histology + Science",1,3600,40,44,64,800],[14,"Anatomy Studio",1,1500,0,35,55,700]]],["4.0","Clinical Skills & Sim","#EFB1D0",[[15,"Skills Labs",4,1600,24,44,80,875],[16,"Sim Suites",4,400,1,30,60,1150],[17,"Sim Control",4,150,0,30,60,1100],[18,"Debrief Rooms",12,300,12,26,46,650],[19,"SP Exam Rooms",30,120,1,16,80,900],[20,"SP Control",1,1500,0,16,80,950],[21,"SP Lounge",1,700,0,20,40,550],[22,"Sim Storage",1,2000,0,10,20,450]]],["5.0","Community","#CAEADF",[[23,"Data/Viz Studio",1,1200,0,25,50,750]]],["6.0","Student Learning","#FFE885",[[24,"Student Commons",1,7300,0,79,93,550],[25,"Quiet Study",1,11000,0,71,89,500],[26,"Lockers/Wellness",1,3580,0,60,85,400],[27,"Student Org Suite",1,600,0,30,55,500],[28,"Testing Lab",1,2800,80,36,90,700]]],["7.0","Faculty Offices","#B6CDEF",[[29,"Private Offices",70,120,1,45,65,600],[30,"Chair Offices",8,180,1,40,60,650],[31,"Open Workstations",12,64,1,35,55,550],[32,"Conf Room (12)",4,400,12,40,65,625],[33,"Conf Room (20)",1,600,20,40,65,625],[34,"Faculty Lounge",1,950,0,30,50,500],[35,"Mail/Copy",2,300,0,25,40,400]]],["8.0","Administration","#B6CDEF",[[36,"Dean's Suite",1,1100,0,45,60,650],[37,"Med Ed Office",1,900,0,45,60,600],[38,"Student Affairs",1,700,0,40,55,600],[39,"Registrar",1,400,0,35,50,550],[40,"Admin Workstations",8,64,1,40,60,500],[41,"Meeting Rooms",3,120,4,25,45,500],[42,"Board Room",1,650,20,20,50,750]]],["9.0","IT & AV","#C2C3C8",[[43,"Server/MDF",1,700,0,95,95,950],[44,"IDF Closets",5,100,0,95,95,600],[45,"AV Studio",1,800,0,30,55,900],[46,"IT Help Desk",1,500,0,40,60,600],[47,"IT Offices",5,120,1,40,60,550]]],["10.0","Building Support","#C2C3C8",[[48,"Entry/Reception",1,500,0,70,90,600],[49,"Restrooms",1,3800,0,50,80,550],[50,"MEP Rooms",1,4500,0,95,95,400],[51,"Security",1,400,0,40,60,400],[52,"Custodial",7,80,0,30,50,350],[53,"Loading/Receiving",1,1000,0,20,40,350],[54,"Storage",6,500,0,20,40,350],[55,"Lactation",2,100,0,15,30,400],[56,"First Aid",1,200,0,10,30,500]]]],"clinic":[["C1","Exam & Consultation","#96EBF6",[[1,"General Exam",14,120,1,45,75,750],[2,"Consultation",1,150,2,35,60,700],[3,"Triage Bays",2,80,1,50,80,600]]],["C2","Diagnostics","#B6CDEF",[[4,"POC Lab",1,300,0,40,65,850],[5,"Basic Imaging",1,400,0,30,55,950],[6,"Specimen Collection",1,120,1,35,60,700],[7,"Pharmacy",1,270,0,40,60,800]]],["C3","Urgent Care","#52D1ED",[[8,"UC Entry/Triage",1,200,0,50,80,650],[9,"Exam Bays",4,120,1,40,70,750],[10,"Procedure Bay",1,250,1,30,55,850]]],["C4","Patient Support","#FFF4C7",[[11,"Indoor Waiting",1,600,0,70,90,550],[12,"Outdoor Waiting",1,400,0,60,85,350],[13,"Health Ed Alcove",1,200,0,25,45,500],[14,"Patient WC",1,270,0,50,80,550]]],["C5","Med Education","#9EDDD1",[[15,"Student Workroom",1,350,8,43,65,600],[16,"Preceptor Offices",2,120,1,40,60,600],[17,"Student Lockers",1,110,0,60,85,400]]],["C6","Staff & Ops","#98ACE5",[[18,"Provider Offices",3,120,1,45,65,600],[19,"Clinic Manager",1,120,1,40,60,600],[20,"Staff Break",1,200,0,55,75,450]]],["C7","Building Support","#C2C3C8",[[21,"IT Closet",1,80,0,95,95,800],[22,"Custodial",1,80,0,30,50,350],[23,"Storage/Supply",1,200,0,25,40,350],[24,"Staff WC",1,170,0,50,80,550]]]],"residence":[["R1","Single Rooms","#FFCDAE",[[1,"Single Student",70,220,1,85,95,480]]],["R2","Double Rooms","#FFAF7D",[[2,"Double Student",40,340,2,85,95,450]]],["R3","Amenities","#F28D79",[[3,"Rooftop/Pool",1,3500,0,40,70,350],[4,"Kitchen/Dining",1,2500,0,65,85,550],[5,"Fitness",1,2800,0,50,80,500],[6,"Multi-Purpose",1,2400,0,30,60,450],[7,"Group Study",6,280,6,55,80,500],[8,"Quiet Lounge",1,440,0,65,85,450]]],["R4","Floor Common","#FFE885",[[9,"Floor Lounge",6,500,0,55,75,400],[10,"Floor Study",6,250,4,50,75,450],[11,"Laundry",3,200,0,40,60,350]]],["R5","Admin & Ops","#FF6A4F",[[12,"RA Apartments",2,350,1,90,95,450],[13,"Mgmt Office",1,200,1,40,60,550],[14,"Reception/Mail",1,200,0,50,70,500]]],["R6","Building Support","#C2C3C8",[[15,"Lobby",1,600,0,70,90,550],[16,"MEP/Gen/Cistern",1,1200,0,95,95,380],[17,"Storage/Maint",1,600,0,25,40,350],[18,"Trash/Recycle",1,250,0,20,35,300],[19,"Common WC",1,260,0,50,80,500]]]],"townhomes":[["T1","1-BR Units","#CAEADF",[[1,"1-BR Townhome",54,750,1,90,95,360]]],["T2","2-BR Units","#9EDDD1",[[2,"2-BR Townhome",16,1000,2,90,95,340]]],["T3","4-BR Units","#66C6C1",[[3,"4-BR Townhome",16,1250,4,90,95,320]]],["T4","Community","#FFE885",[[4,"Pool/Clubhouse",1,2500,0,40,65,400],[5,"Playground",1,1500,0,30,55,300],[6,"BBQ/Social",1,1200,0,25,50,250]]],["T5","Site Infra","#C2C3C8",[[7,"Roads/Parking",1,12000,0,0,0,180],[8,"Utilities",1,4000,0,0,0,250],[9,"Landscaping",1,6600,0,0,0,120]]]]}},{"label":"Scenario C","rooms":{"academic":[["1.0","Modular Lecture & TBL","#CAEADF",[[1,"Room A1",1,3850,175,56,80,850],[2,"Room A2 Swing",1,3850,175,56,84,850],[3,"Room A3",1,3850,175,56,80,850],[4,"Room BC1",1,3850,175,44,72,850],[5,"Room BC2 Swing",1,3850,175,36,68,850],[6,"Room BC3",1,3850,175,36,68,850],[7,"AV Control",3,200,0,40,70,1000],[8,"Lecturer Prep",4,150,0,30,55,575]]],["2.0","Small Group & PBL","#FFE885",[[9,"PBL Rooms",30,250,12,43,64,675],[10,"Seminar Rooms",6,550,24,44,70,625],[11,"Flexible Classroom",3,1800,60,30,80,675]]],["3.0","Digital Anatomy & Labs","#9EDDD1",[[12,"Digital Anatomy Lab",1,3500,82,50,70,975],[13,"Histology + Science",1,3600,40,44,64,800],[14,"Anatomy Studio",1,1500,0,35,55,700]]],["4.0","Clinical Skills & Sim","#EFB1D0",[[15,"Skills Labs",4,1600,24,44,80,875],[16,"Sim Suites",4,400,1,30,60,1150],[17,"Sim Control",4,150,0,30,60,1100],[18,"Debrief Rooms",12,300,12,26,46,650],[19,"SP Exam Rooms",30,120,1,16,80,900],[20,"SP Control",1,1500,0,16,80,950],[21,"SP Lounge",1,700,0,20,40,550],[22,"Sim Storage",1,2000,0,10,20,450]]],["5.0","Community","#CAEADF",[[23,"Data/Viz Studio",1,1200,0,25,50,750]]],["6.0","Student Learning","#FFE885",[[24,"Student Commons",1,7300,0,79,93,550],[25,"Quiet Study",1,11000,0,71,89,500],[26,"Lockers/Wellness",1,3580,0,60,85,400],[27,"Student Org Suite",1,600,0,30,55,500],[28,"Testing Lab",1,2800,80,36,90,700]]],["7.0","Faculty Offices","#B6CDEF",[[29,"Private Offices",70,120,1,45,65,600],[30,"Chair Offices",8,180,1,40,60,650],[31,"Open Workstations",12,64,1,35,55,550],[32,"Conf Room (12)",4,400,12,40,65,625],[33,"Conf Room (20)",1,600,20,40,65,625],[34,"Faculty Lounge",1,950,0,30,50,500],[35,"Mail/Copy",2,300,0,25,40,400]]],["8.0","Administration","#B6CDEF",[[36,"Dean's Suite",1,1100,0,45,60,650],[37,"Med Ed Office",1,900,0,45,60,600],[38,"Student Affairs",1,700,0,40,55,600],[39,"Registrar",1,400,0,35,50,550],[40,"Admin Workstations",8,64,1,40,60,500],[41,"Meeting Rooms",3,120,4,25,45,500],[42,"Board Room",1,650,20,20,50,750]]],["9.0","IT & AV","#C2C3C8",[[43,"Server/MDF",1,700,0,95,95,950],[44,"IDF Closets",5,100,0,95,95,600],[45,"AV Studio",1,800,0,30,55,900],[46,"IT Help Desk",1,500,0,40,60,600],[47,"IT Offices",5,120,1,40,60,550]]],["10.0","Building Support","#C2C3C8",[[48,"Entry/Reception",1,500,0,70,90,600],[49,"Restrooms",1,3800,0,50,80,550],[50,"MEP Rooms",1,4500,0,95,95,400],[51,"Security",1,400,0,40,60,400],[52,"Custodial",7,80,0,30,50,350],[53,"Loading/Receiving",1,1000,0,20,40,350],[54,"Storage",6,500,0,20,40,350],[55,"Lactation",2,100,0,15,30,400],[56,"First Aid",1,200,0,10,30,500]]]],"clinic":[["C1","Exam & Consultation","#96EBF6",[[1,"General Exam",14,120,1,45,75,750],[2,"Consultation",1,150,2,35,60,700],[3,"Triage Bays",2,80,1,50,80,600]]],["C2","Diagnostics","#B6CDEF",[[4,"POC Lab",1,300,0,40,65,850],[5,"Basic Imaging",1,400,0,30,55,950],[6,"Specimen Collection",1,120,1,35,60,700],[7,"Pharmacy",1,270,0,40,60,800]]],["C3","Urgent Care","#52D1ED",[[8,"UC Entry/Triage",1,200,0,50,80,650],[9,"Exam Bays",4,120,1,40,70,750],[10,"Procedure Bay",1,250,1,30,55,850]]],["C4","Patient Support","#FFF4C7",[[11,"Indoor Waiting",1,600,0,70,90,550],[12,"Outdoor Waiting",1,400,0,60,85,350],[13,"Health Ed Alcove",1,200,0,25,45,500],[14,"Patient WC",1,270,0,50,80,550]]],["C5","Med Education","#9EDDD1",[[15,"Student Workroom",1,350,8,43,65,600],[16,"Preceptor Offices",2,120,1,40,60,600],[17,"Student Lockers",1,110,0,60,85,400]]],["C6","Staff & Ops","#98ACE5",[[18,"Provider Offices",3,120,1,45,65,600],[19,"Clinic Manager",1,120,1,40,60,600],[20,"Staff Break",1,200,0,55,75,450]]],["C7","Building Support","#C2C3C8",[[21,"IT Closet",1,80,0,95,95,800],[22,"Custodial",1,80,0,30,50,350],[23,"Storage/Supply",1,200,0,25,40,350],[24,"Staff WC",1,170,0,50,80,550]]]],"residence":[["R1","Single Rooms","#FFCDAE",[[1,"Single Student",70,220,1,85,95,480]]],["R2","Double Rooms","#FFAF7D",[[2,"Double Student",40,340,2,85,95,450]]],["R3","Amenities","#F28D79",[[3,"Rooftop/Pool",1,3500,0,40,70,350],[4,"Kitchen/Dining",1,2500,0,65,85,550],[5,"Fitness",1,2800,0,50,80,500],[6,"Multi-Purpose",1,2400,0,30,60,450],[7,"Group Study",6,280,6,55,80,500],[8,"Quiet Lounge",1,440,0,65,85,450]]],["R4","Floor Common","#FFE885",[[9,"Floor Lounge",6,500,0,55,75,400],[10,"Floor Study",6,250,4,50,75,450],[11,"Laundry",3,200,0,40,60,350]]],["R5","Admin & Ops","#FF6A4F",[[12,"RA Apartments",2,350,1,90,95,450],[13,"Mgmt Office",1,200,1,40,60,550],[14,"Reception/Mail",1,200,0,50,70,500]]],["R6","Building Support","#C2C3C8",[[15,"Lobby",1,600,0,70,90,550],[16,"MEP/Gen/Cistern",1,1200,0,95,95,380],[17,"Storage/Maint",1,600,0,25,40,350],[18,"Trash/Recycle",1,250,0,20,35,300],[19,"Common WC",1,260,0,50,80,500]]]],"townhomes":[["T1","1-BR Units","#CAEADF",[[1,"1-BR Townhome",54,750,1,90,95,360]]],["T2","2-BR Units","#9EDDD1",[[2,"2-BR Townhome",16,1000,2,90,95,340]]],["T3","4-BR Units","#66C6C1",[[3,"4-BR Townhome",16,1250,4,90,95,320]]],["T4","Community","#FFE885",[[4,"Pool/Clubhouse",1,2500,0,40,65,400],[5,"Playground",1,1500,0,30,55,300],[6,"BBQ/Social",1,1200,0,25,50,250]]],["T5","Site Infra","#C2C3C8",[[7,"Roads/Parking",1,12000,0,0,0,180],[8,"Utilities",1,4000,0,0,0,250],[9,"Landscaping",1,6600,0,0,0,120]]]]}}];
 
-var F=function(n){return Math.round(n).toLocaleString()};
-var si=0,tab="academic",expanded={},aScale=3,sel=null,selR=null; // sel=building, selR=room key e.g. "academic-2-3"
-function S(){return SCENARIOS[si]}
-function R(bk){return S().rooms[bk]}
-function G(bk){return BMETA[bk].grossing}
+// ═══════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════
+var TOTAL_WEEKLY_HOURS = 40;
+var WEEKDAYS_PER_WEEK  = 5;
+var STORAGE_KICKER     = 1.10;
+var LAB_KICKER         = 1.30;
+var SIM_KICKER         = 1.75;
+var DEBRIEF_NSF_PER_ROOM = 300; // 1:1 debrief room per sim suite room
+var SP_KICKER          = 1.00;  // +100% for suite corridors/adjacent spaces
+var SEMINAR_NSF        = 600;
+var NSF_BASELINE       = 207000;
+var NSF_V58            = 121000;
+var COHORTS            = ["sep","jan","may"];
+var COHORT_LABELS      = {sep:"September",jan:"January",may:"May"};
+var COHORT_COLORS      = {sep:"#1D4ED8",jan:"#0F766E",may:"#7E22CE"};
 
-function catN(c){var t=0;for(var i=0;i<c[3].length;i++){var r=c[3][i];t+=r[2]*r[3]}return t}
-function bN(bk){var t=0,rs=R(bk);for(var i=0;i<rs.length;i++)t+=catN(rs[i]);return t}
-function bG(bk){var g=G(bk);return g===1?bN(bk):Math.round(bN(bk)*g)}
-function cGSF(){return bG("academic")+bG("clinic")+bG("residence")+bG("townhomes")}
+var CAT_DEFS = [
+  {key:"largeTBL",   color:"emerald",title:"Large TBL",           sfPerSeat:22,kicker:STORAGE_KICKER,seminar:false,simK:false,labK:false,parent:"large",
+   prev:{rooms:9, total:1800,nsf:40000}},
+  {key:"medClass",   color:"orange", title:"Medium Classroom",     sfPerSeat:25,kicker:STORAGE_KICKER,seminar:true, simK:false,labK:false,parent:"medium",
+   prev:{rooms:8, total:400, nsf:17000}},
+  {key:"clinSkills", color:"teal",   title:"Clinical Skills",      sfPerSeat:25,kicker:1.0,           seminar:false,simK:false,labK:false,parent:"medium",
+   prev:{rooms:6, total:144, nsf:10000}},
+  {key:"teachLab",   color:"rose",   title:"Teaching Lab (Histology/Anatomy)",sfPerSeat:30,kicker:LAB_KICKER,   seminar:false,simK:false,labK:true, parent:"medium",
+   prev:{rooms:4, total:360, nsf:14000}},
+  {key:"simSuite",   color:"amber",  title:"Sim Suite",            sfPerSeat:30,kicker:1.0,           seminar:false,simK:true, labK:false,parent:"small",
+   prev:{rooms:8, total:64,  nsf:10000}},
+  {key:"smallPBL",   color:"sky",    title:"Small PBL",            sfPerSeat:30,kicker:1.0,           seminar:false,simK:false,labK:false,parent:"small",
+   prev:{rooms:60,total:480, nsf:15000}},
+  {key:"spExam",     color:"indigo", title:"OSCE SP Exam Rooms",        sfPerSeat:30,kicker:1.0,           seminar:false,simK:false,labK:false,spK:true, parent:"small",
+   prev:{rooms:60,total:120, nsf:10000}},
+];
 
-// Initialize enrollment data on each scenario
-for(var i=0;i<SCENARIOS.length;i++){
-  SCENARIOS[i].enr={total:2500,preclinical:1300,sept:325,jan:195,may:130,beds:150,facUnits:86};
+// ═══════════════════════════════════════════════
+// DEFAULT DATA
+// ═══════════════════════════════════════════════
+var DEFAULT_SEMESTERS = [{"id":1,"name":"Sem 0 (Med Origin)","sep":100,"jan":75,"may":60,"largeTBL":60,"medClass":10,"clinSkills":0,"teachLab":10,"simSuite":0,"spExam":0,"smallPBL":0,"indep":20},{"id":2,"name":"Sem 1","sep":750,"jan":520,"may":470,"largeTBL":40,"medClass":20,"clinSkills":5,"teachLab":5,"simSuite":0,"spExam":0,"smallPBL":5,"indep":25},{"id":3,"name":"Sem 2","sep":380,"jan":650,"may":550,"largeTBL":30,"medClass":20,"clinSkills":5,"teachLab":10,"simSuite":5,"spExam":0,"smallPBL":5,"indep":25},{"id":4,"name":"Sem 3","sep":470,"jan":340,"may":600,"largeTBL":30,"medClass":15,"clinSkills":5,"teachLab":10,"simSuite":5,"spExam":5,"smallPBL":5,"indep":25},{"id":5,"name":"Sem 4","sep":440,"jan":370,"may":330,"largeTBL":30,"medClass":15,"clinSkills":5,"teachLab":10,"simSuite":5,"spExam":5,"smallPBL":5,"indep":25},{"id":6,"name":"Sem 5","sep":310,"jan":450,"may":425,"largeTBL":15,"medClass":15,"clinSkills":0,"teachLab":10,"simSuite":10,"spExam":5,"smallPBL":5,"indep":40},{"id":7,"name":"Sem 6 (Capstone)","sep":50,"jan":100,"may":75,"largeTBL":10,"medClass":10,"clinSkills":0,"teachLab":0,"simSuite":0,"spExam":0,"smallPBL":10,"indep":70}];
+
+var DEFAULT_INPUTS = {"academicWeeks":"13","largeTBLSessionHrs":"1.5","largeTBLFaculty":"1","medClassSessionHrs":"1.0","medClassFaculty":"1","clinSkillsSessionHrs":"1.0","clinSkillsFaculty":"1","teachLabSessionHrs":"1.5","teachLabFaculty":"1","simSuiteSessionHrs":"1.0","simSuiteFaculty":"1","spExamSessionHrs":"1.0","spExamFaculty":"0.25","smallPBLSessionHrs":"1.0","smallPBLFaculty":"0.25","indepSegmentHrs":"0.5","facultyCoursesPerSem":"4","facultyHrsPerWeek":"12","facultyTeachingPct":"80","r_largeTBL_cap":"300","r_largeTBL_fill":"90","r_largeTBL_sess":"5","r_medClass_cap":"50","r_medClass_fill":"90","r_medClass_sess":"7","r_clinSkills_cap":"24","r_clinSkills_fill":"85","r_clinSkills_sess":"7","r_teachLab_cap":"80","r_teachLab_fill":"90","r_teachLab_sess":"5","r_simSuite_cap":"20","r_simSuite_fill":"100","r_simSuite_sess":"8","r_spExam_cap":"4","r_spExam_fill":"100","r_spExam_sess":"8","r_smallPBL_cap":"8","r_smallPBL_fill":"80","r_smallPBL_sess":"8","r_indep_cap":"1","r_indep_fill":"85","r_indep_sess":"20","osce_stations":"10","osce_sessions_per_day":"3","osce_exam_days":"10","osce_sem4":"1","osce_sem5":"1","osce_sem6":"1","r_largeTBL_sf":"22","r_medClass_sf":"25","r_clinSkills_sf":"25","r_teachLab_sf":"30","r_simSuite_sf":"30","r_spExam_sf":"30","r_smallPBL_sf":"30","r_indep_sf":"30","nbme_accom_pct":"10","nbme_exam_days":"2","nbme_sem5":"1","nbme_sem6":"0","r_examCenter_cap":"45","r_examCenter_fill":"95","r_examCenter_sf":"30","fac_on_staff_pct":"70","fac_onstaff_sf":"160","fac_visiting_sf":"60","admin_sf_per_person":"160"};
+
+function makeDefaultScenario(n){
+  return {id:n, name:"Scenario "+n,
+    semesters:JSON.parse(JSON.stringify(DEFAULT_SEMESTERS)),
+    inputs:JSON.parse(JSON.stringify(DEFAULT_INPUTS))};
 }
-function bCost(bk,tier){
-  var rs=R(bk),wN=0,wD=0;
-  for(var ci=0;ci<rs.length;ci++){var cat=rs[ci];for(var ri=0;ri<cat[3].length;ri++){var r=cat[3][ri],g=Math.round(r[2]*r[3]*(G(bk)===1?1:G(bk)));wN+=g*r[7];wD+=g}}
-  var mid=wD>0?wN/wD:0;var mul=tier==="low"?.85:tier==="high"?1.15:1;return bG(bk)*Math.round(mid*mul);
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+var SCENARIOS       = [{"id":1,"name":"260618 Boston Workshop Scenario","semesters":[{"id":1,"name":"Sem 0 (Med Origin)","sep":100,"jan":75,"may":60,"largeTBL":60,"medClass":10,"clinSkills":0,"teachLab":10,"simSuite":0,"spExam":0,"smallPBL":0,"indep":20},{"id":2,"name":"Sem 1","sep":750,"jan":520,"may":470,"largeTBL":40,"medClass":20,"clinSkills":5,"teachLab":5,"simSuite":0,"spExam":0,"smallPBL":5,"indep":25},{"id":3,"name":"Sem 2","sep":380,"jan":650,"may":550,"largeTBL":30,"medClass":20,"clinSkills":5,"teachLab":10,"simSuite":5,"spExam":0,"smallPBL":5,"indep":25},{"id":4,"name":"Sem 3","sep":470,"jan":340,"may":600,"largeTBL":30,"medClass":15,"clinSkills":5,"teachLab":10,"simSuite":5,"spExam":5,"smallPBL":5,"indep":25},{"id":5,"name":"Sem 4","sep":440,"jan":370,"may":330,"largeTBL":30,"medClass":15,"clinSkills":5,"teachLab":10,"simSuite":5,"spExam":5,"smallPBL":5,"indep":25},{"id":6,"name":"Sem 5","sep":310,"jan":450,"may":425,"largeTBL":15,"medClass":15,"clinSkills":0,"teachLab":10,"simSuite":10,"spExam":5,"smallPBL":5,"indep":40},{"id":7,"name":"Sem 6 (Capstone)","sep":50,"jan":100,"may":75,"largeTBL":10,"medClass":10,"clinSkills":0,"teachLab":0,"simSuite":0,"spExam":0,"smallPBL":10,"indep":70}],"inputs":{"academicWeeks":"13","largeTBLSessionHrs":"1.5","largeTBLFaculty":"1","medClassSessionHrs":"1.0","medClassFaculty":"1","clinSkillsSessionHrs":"1.0","clinSkillsFaculty":"1","teachLabSessionHrs":"1.5","teachLabFaculty":"1","simSuiteSessionHrs":"1.0","simSuiteFaculty":"1","spExamSessionHrs":"1.0","spExamFaculty":"0.25","smallPBLSessionHrs":"1.0","smallPBLFaculty":"0.25","indepSegmentHrs":"0.5","facultyCoursesPerSem":"4","facultyHrsPerWeek":"12","facultyTeachingPct":"80","r_largeTBL_cap":"300","r_largeTBL_fill":"90","r_largeTBL_sess":"5","r_medClass_cap":"50","r_medClass_fill":"90","r_medClass_sess":"7","r_clinSkills_cap":"24","r_clinSkills_fill":"85","r_clinSkills_sess":"7","r_teachLab_cap":"80","r_teachLab_fill":"90","r_teachLab_sess":"5","r_simSuite_cap":"20","r_simSuite_fill":"100","r_simSuite_sess":"8","r_spExam_cap":"4","r_spExam_fill":"100","r_spExam_sess":"8","r_smallPBL_cap":"8","r_smallPBL_fill":"80","r_smallPBL_sess":"8","r_indep_cap":"1","r_indep_fill":"85","r_indep_sess":"20","osce_stations":"10","osce_sessions_per_day":"3","osce_exam_days":"10","osce_sem4":"1","osce_sem5":"1","osce_sem6":"1","r_largeTBL_sf":"22","r_medClass_sf":"25","r_clinSkills_sf":"25","r_teachLab_sf":"30","r_simSuite_sf":"30","r_spExam_sf":"30","r_smallPBL_sf":"30","r_indep_sf":"30","nbme_accom_pct":"10","nbme_exam_days":"2","nbme_sem5":"1","nbme_sem6":"0","r_examCenter_cap":"45","r_examCenter_fill":"95","r_examCenter_sf":"30","fac_on_staff_pct":"70","fac_onstaff_sf":"160","fac_visiting_sf":"60","admin_sf_per_person":"160"}},{"id":16,"name":"260710 Barbados Workshop Scenario 1","semesters":[{"id":71,"name":"Sem 0 (Med Origin)","sep":100,"jan":75,"may":60,"largeTBL":45,"medClass":5,"clinSkills":0,"teachLab":0,"simSuite":0,"spExam":0,"smallPBL":20,"indep":30},{"id":72,"name":"Sem 1","sep":750,"jan":520,"may":470,"largeTBL":45,"medClass":5,"clinSkills":1.25,"teachLab":2.5,"simSuite":2.5,"spExam":0,"smallPBL":20,"indep":25},{"id":73,"name":"Sem 2","sep":380,"jan":650,"may":550,"largeTBL":40,"medClass":10,"clinSkills":1.25,"teachLab":2.5,"simSuite":2.5,"spExam":0,"smallPBL":20,"indep":25},{"id":74,"name":"Sem 3","sep":470,"jan":340,"may":600,"largeTBL":30,"medClass":12.5,"clinSkills":1.25,"teachLab":3.75,"simSuite":2.5,"spExam":0,"smallPBL":20,"indep":30},{"id":75,"name":"Sem 4","sep":440,"jan":370,"may":330,"largeTBL":30,"medClass":12.5,"clinSkills":1.25,"teachLab":3.75,"simSuite":2.5,"spExam":0,"smallPBL":20,"indep":30},{"id":76,"name":"Sem 5","sep":310,"jan":450,"may":425,"largeTBL":30,"medClass":17.5,"clinSkills":0,"teachLab":2.5,"simSuite":5,"spExam":0,"smallPBL":20,"indep":25},{"id":77,"name":"Sem 6 (Capstone)","sep":50,"jan":100,"may":75,"largeTBL":5,"medClass":25,"clinSkills":0,"teachLab":0,"simSuite":0,"spExam":0,"smallPBL":25,"indep":45}],"inputs":{"academicWeeks":"13","largeTBLSessionHrs":"1.5","largeTBLFaculty":"1","medClassSessionHrs":"2","medClassFaculty":"1","clinSkillsSessionHrs":"2.5","clinSkillsFaculty":"1","teachLabSessionHrs":"2","teachLabFaculty":"1","simSuiteSessionHrs":"2","simSuiteFaculty":"1","spExamSessionHrs":"1.0","spExamFaculty":"0.25","smallPBLSessionHrs":"2","smallPBLFaculty":"0.25","indepSegmentHrs":"0.5","facultyCoursesPerSem":"4","facultyHrsPerWeek":"12","facultyTeachingPct":"90","r_largeTBL_cap":"300","r_largeTBL_fill":"90","r_largeTBL_sess":"4","r_medClass_cap":"50","r_medClass_fill":"90","r_medClass_sess":"3","r_clinSkills_cap":"24","r_clinSkills_fill":"90","r_clinSkills_sess":"3","r_teachLab_cap":"80","r_teachLab_fill":"90","r_teachLab_sess":"3","r_simSuite_cap":"8","r_simSuite_fill":"100","r_simSuite_sess":"3","r_spExam_cap":"2","r_spExam_fill":"100","r_spExam_sess":"8","r_smallPBL_cap":"8","r_smallPBL_fill":"100","r_smallPBL_sess":"3","r_indep_cap":"1","r_indep_fill":"85","r_indep_sess":"16","osce_stations":"12","osce_sessions_per_day":"2","osce_exam_days":"15","osce_sem4":"1","osce_sem5":"1","osce_sem6":"0","r_largeTBL_sf":"23","r_medClass_sf":"25","r_clinSkills_sf":"60","r_teachLab_sf":"35","r_simSuite_sf":"75","r_spExam_sf":"60","r_smallPBL_sf":"30","r_indep_sf":"30","nbme_accom_pct":"20","nbme_exam_days":"2","nbme_sem5":"1","nbme_sem6":"0","r_examCenter_cap":"80","r_examCenter_fill":"95","r_examCenter_sf":"30","fac_on_staff_pct":"70","fac_onstaff_sf":"240","fac_visiting_sf":"80","admin_sf_per_person":"180"}},{"id":17,"name":"260710 Barbados Workshop Scenario 2","semesters":[{"id":78,"name":"Sem 0 (Med Origin)","sep":100,"jan":75,"may":60,"largeTBL":60,"medClass":15,"clinSkills":0,"teachLab":2.5,"simSuite":2.5,"spExam":0,"smallPBL":0,"indep":20},{"id":79,"name":"Sem 1","sep":750,"jan":520,"may":470,"largeTBL":40,"medClass":15,"clinSkills":0,"teachLab":2.5,"simSuite":2.5,"spExam":0,"smallPBL":10,"indep":30},{"id":80,"name":"Sem 2","sep":380,"jan":650,"may":550,"largeTBL":40,"medClass":10,"clinSkills":2.5,"teachLab":2.5,"simSuite":2.5,"spExam":0,"smallPBL":15,"indep":30},{"id":81,"name":"Sem 3","sep":470,"jan":340,"may":600,"largeTBL":40,"medClass":10,"clinSkills":2.5,"teachLab":2.5,"simSuite":2.5,"spExam":0,"smallPBL":15,"indep":30},{"id":82,"name":"Sem 4","sep":440,"jan":370,"may":330,"largeTBL":40,"medClass":10,"clinSkills":2.5,"teachLab":2.5,"simSuite":2.5,"spExam":0,"smallPBL":15,"indep":30},{"id":83,"name":"Sem 5","sep":310,"jan":450,"may":425,"largeTBL":20,"medClass":25,"clinSkills":2.5,"teachLab":2.5,"simSuite":2.5,"spExam":0,"smallPBL":10,"indep":40},{"id":84,"name":"Sem 6 (Capstone)","sep":50,"jan":100,"may":75,"largeTBL":10,"medClass":5,"clinSkills":0,"teachLab":2.5,"simSuite":2.5,"spExam":0,"smallPBL":10,"indep":70}],"inputs":{"academicWeeks":"13","largeTBLSessionHrs":"1.5","largeTBLFaculty":"1","medClassSessionHrs":"2","medClassFaculty":"1","clinSkillsSessionHrs":"2.5","clinSkillsFaculty":"1","teachLabSessionHrs":"2","teachLabFaculty":"1","simSuiteSessionHrs":"2","simSuiteFaculty":"1","spExamSessionHrs":"1.0","spExamFaculty":"0.25","smallPBLSessionHrs":"2","smallPBLFaculty":"0.25","indepSegmentHrs":"0.5","facultyCoursesPerSem":"4","facultyHrsPerWeek":"12","facultyTeachingPct":"90","r_largeTBL_cap":"300","r_largeTBL_fill":"90","r_largeTBL_sess":"4","r_medClass_cap":"50","r_medClass_fill":"90","r_medClass_sess":"3","r_clinSkills_cap":"24","r_clinSkills_fill":"90","r_clinSkills_sess":"3","r_teachLab_cap":"80","r_teachLab_fill":"90","r_teachLab_sess":"3","r_simSuite_cap":"8","r_simSuite_fill":"100","r_simSuite_sess":"3","r_spExam_cap":"2","r_spExam_fill":"100","r_spExam_sess":"8","r_smallPBL_cap":"8","r_smallPBL_fill":"100","r_smallPBL_sess":"3","r_indep_cap":"1","r_indep_fill":"85","r_indep_sess":"16","osce_stations":"12","osce_sessions_per_day":"2","osce_exam_days":"15","osce_sem4":"1","osce_sem5":"1","osce_sem6":"0","r_largeTBL_sf":"23","r_medClass_sf":"25","r_clinSkills_sf":"60","r_teachLab_sf":"35","r_simSuite_sf":"75","r_spExam_sf":"60","r_smallPBL_sf":"30","r_indep_sf":"30","nbme_accom_pct":"20","nbme_exam_days":"2","nbme_sem5":"1","nbme_sem6":"0","r_examCenter_cap":"80","r_examCenter_fill":"95","r_examCenter_sf":"30","fac_on_staff_pct":"70","fac_onstaff_sf":"250","fac_visiting_sf":"80","admin_sf_per_person":"180"}},{"id":14,"name":"260710 Barbados Workshop Reconciled Scenario","semesters":[{"id":64,"name":"Sem 0 (Med Origin)","sep":100,"jan":75,"may":60,"largeTBL":60,"medClass":15,"clinSkills":0,"teachLab":2.5,"simSuite":2.5,"spExam":0,"smallPBL":0,"indep":20},{"id":65,"name":"Sem 1","sep":750,"jan":520,"may":470,"largeTBL":40,"medClass":15,"clinSkills":0,"teachLab":2.5,"simSuite":2.5,"spExam":0,"smallPBL":10,"indep":30},{"id":66,"name":"Sem 2","sep":380,"jan":650,"may":550,"largeTBL":40,"medClass":15,"clinSkills":0,"teachLab":5,"simSuite":2.5,"spExam":0,"smallPBL":10,"indep":30},{"id":67,"name":"Sem 3","sep":470,"jan":340,"may":600,"largeTBL":40,"medClass":15,"clinSkills":2.5,"teachLab":2.5,"simSuite":2.5,"spExam":0,"smallPBL":10,"indep":30},{"id":68,"name":"Sem 4","sep":440,"jan":370,"may":330,"largeTBL":40,"medClass":15,"clinSkills":2.5,"teachLab":2.5,"simSuite":2.5,"spExam":0,"smallPBL":10,"indep":30},{"id":69,"name":"Sem 5","sep":310,"jan":450,"may":425,"largeTBL":20,"medClass":25,"clinSkills":2.5,"teachLab":2.5,"simSuite":2.5,"spExam":0,"smallPBL":10,"indep":40},{"id":70,"name":"Sem 6 (Capstone)","sep":50,"jan":100,"may":75,"largeTBL":10,"medClass":5,"clinSkills":0,"teachLab":2.5,"simSuite":2.5,"spExam":0,"smallPBL":10,"indep":70}],"inputs":{"academicWeeks":"13","largeTBLSessionHrs":"1.5","largeTBLFaculty":"1","medClassSessionHrs":"2","medClassFaculty":"1","clinSkillsSessionHrs":"2.5","clinSkillsFaculty":"1","teachLabSessionHrs":"2","teachLabFaculty":"1","simSuiteSessionHrs":"2","simSuiteFaculty":"1","spExamSessionHrs":"1.0","spExamFaculty":"0.25","smallPBLSessionHrs":"2","smallPBLFaculty":"0.25","indepSegmentHrs":"0.5","facultyCoursesPerSem":"4","facultyHrsPerWeek":"12","facultyTeachingPct":"90","r_largeTBL_cap":"300","r_largeTBL_fill":"90","r_largeTBL_sess":"4","r_medClass_cap":"50","r_medClass_fill":"90","r_medClass_sess":"3","r_clinSkills_cap":"24","r_clinSkills_fill":"90","r_clinSkills_sess":"3","r_teachLab_cap":"80","r_teachLab_fill":"90","r_teachLab_sess":"3","r_simSuite_cap":"8","r_simSuite_fill":"100","r_simSuite_sess":"3","r_spExam_cap":"2","r_spExam_fill":"100","r_spExam_sess":"8","r_smallPBL_cap":"8","r_smallPBL_fill":"90","r_smallPBL_sess":"3","r_indep_cap":"1","r_indep_fill":"85","r_indep_sess":"16","osce_stations":"12","osce_sessions_per_day":"2","osce_exam_days":"15","osce_sem4":"1","osce_sem5":"1","osce_sem6":"0","r_largeTBL_sf":"23","r_medClass_sf":"25","r_clinSkills_sf":"60","r_teachLab_sf":"35","r_simSuite_sf":"75","r_spExam_sf":"60","r_smallPBL_sf":"30","r_indep_sf":"30","nbme_accom_pct":"20","nbme_exam_days":"2","nbme_sem5":"1","nbme_sem6":"0","r_examCenter_cap":"80","r_examCenter_fill":"95","r_examCenter_sf":"30","fac_on_staff_pct":"70","fac_onstaff_sf":"240","fac_visiting_sf":"80","admin_sf_per_person":"180"}}];
+var ACTIVE_SCENARIO = 3;
+var INPUT_MODE      = "detailed";
+var nextSemId       = 85;
+var nextScenId      = 18;
+
+function sc(){ return SCENARIOS[ACTIVE_SCENARIO]; }
+function inp(id){ var v=sc().inputs[id]; return parseFloat(v)||0; }
+
+// These specific input boxes live in static HTML (not regenerated each render), so their
+// displayed value can drift out of sync with the active scenario's real stored value —
+// e.g. after switching scenarios or importing JSON. Re-sync them on every render().
+var STATIC_ASSUMPTION_INPUT_IDS = [
+  "osce_stations","osce_sessions_per_day","osce_exam_days","osce_sem4","osce_sem5","osce_sem6",
+  "nbme_accom_pct","nbme_exam_days","nbme_sem5","nbme_sem6"
+];
+function syncStaticAssumptionInputs(){
+  STATIC_ASSUMPTION_INPUT_IDS.forEach(function(key){
+    var elInput = document.getElementById("inp_"+key);
+    if(!elInput) return;
+    if(document.activeElement === elInput) return;  // don't clobber a field the user is actively editing
+    var v = sc().inputs[key];
+    if(v===undefined || v===null) v = DEFAULT_INPUTS[key];
+    elInput.value = v;
+  });
+}
+function fmt(n){ if(n===null||n===undefined||isNaN(n))return"—"; return Math.round(n).toLocaleString(); }
+function fmtNSF(n){ return Math.round(n/1000)+"K sf"; }
+function fmtHrs(n){ var r=Math.round(n*10)/10; return (Math.abs(r-Math.round(r))<1e-9)?String(Math.round(r)):r.toFixed(1); }
+
+// ── Mobile layout support ──────────────────────
+// Below this width, wide tables that would otherwise need horizontal scrolling
+// are instead rendered as stacked cards. Desktop rendering is untouched above it.
+var MOBILE_BREAKPOINT = 768;
+function isMobileView(){ return window.innerWidth <= MOBILE_BREAKPOINT; }
+
+var CURRIC_GROUPS = [
+  {label:"LARGE GROUP", bg:"var(--emerald-bg)", tx:"var(--emerald-tx)",
+    fields:[{key:"largeTBL",label:"TBL"}]},
+  {label:"MEDIUM GROUP", bg:"var(--orange-bg)", tx:"var(--orange-tx)",
+    fields:[{key:"medClass",label:"Med class"},{key:"clinSkills",label:"Skills"},{key:"teachLab",label:"Labs"}]},
+  {label:"SMALL GROUP", bg:"var(--amber-bg)", tx:"var(--amber-tx)",
+    fields:[{key:"simSuite",label:"Sim"},{key:"smallPBL",label:"PBL"}]},
+  {label:"STUDY", bg:"var(--sky-bg)", tx:"var(--sky-tx)",
+    fields:[{key:"indep",label:"Independent study"}]}
+];
+
+function curricFieldHtml(s, g, fld){
+  var hrsVal=fmtHrs((s[fld.key]||0)/100*40);
+  return '<div style="margin-bottom:8px">'+
+    '<label style="display:block;font-size:11px;color:'+g.tx+';margin-bottom:2px">'+fld.label+'</label>'+
+    '<input type="number" step="1" value="'+hrsVal+'" '+
+      'oninput="updateSem('+s.id+',\''+fld.key+'\',Math.round(parseFloat(this.value||0)*2.5*100)/100)" '+
+      'style="width:100%;font-size:16px;padding:6px 8px;border:1px solid var(--line2);border-radius:5px;box-sizing:border-box">'+
+    '</div>';
 }
 
-function render(){
-  try{
-  var sh="";for(var i=0;i<SCENARIOS.length;i++)sh+='<button class="sb'+(i===si?' on':'')+'" onclick="si='+i+';render()">'+SCENARIOS[i].label+'</button>';
-  document.getElementById("st").innerHTML=sh;
-
-  var tds=[{id:"enrollment",l:"Enrollment"},{id:"academic",l:"Academic"},{id:"clinic",l:"Clinic"},{id:"residence",l:"Residence"},{id:"townhomes",l:"Townhomes"},{id:"space",l:"Space & Util"},{id:"cost",l:"Cost & Space"}];
-  var th="";for(var i=0;i<tds.length;i++){var t=tds[i];th+='<button class="tab'+(t.id===tab?' on':'')+'" onclick="tab=\''+t.id+'\';render()">'+t.l+'</button>'}
-  document.getElementById("tabs").innerHTML=th;
-
-  var e=S().enr;
-  var md=[[F(e.preclinical),"Preclinical"],[e.sept+"/"+e.jan+"/"+e.may,"Sept/Jan/May"],[F(bG("academic")),"Academic"],[F(bG("clinic")),"Clinic"],[F(bG("residence")),"Residence"],[F(bG("townhomes")),"Townhomes"],[F(cGSF()),"Campus GSF"]];
-  var mh="";for(var i=0;i<md.length;i++)mh+='<div class="m"><div class="mv">'+md[i][0]+'</div><div class="ml">'+md[i][1]+'</div></div>';
-  document.getElementById("ms").innerHTML=mh;
-
-  var ct=document.getElementById("ct");
-  if(tab==="enrollment")rEnr(ct);else if(tab==="space")rSpace(ct);else if(tab==="cost")rCost(ct);else rProg(ct,tab);
-  document.getElementById("ft").textContent="RUSM "+SCENARIOS[si].label+" \u00b7 "+F(cGSF())+" GSF";
-  }catch(e){console.error("render:",e)}
-}
-
-// ═══ ENROLLMENT TAB ═══
-function rEnr(ct){
-  var e=S().enr;
-  var items=[
-    {k:"total",l:"Total Enrollment",u:"",c:"var(--navy)",mn:1500,mx:4000,st:100},
-    {k:"preclinical",l:"Preclinical in Barbados",u:"students",c:"var(--teal)",mn:600,mx:2000,st:50},
-    {k:"sept",l:"September Cohort (A)",u:"students",c:"var(--gold)",mn:100,mx:500,st:5},
-    {k:"jan",l:"January Cohort (B)",u:"students",c:"var(--gold)",mn:50,mx:350,st:5},
-    {k:"may",l:"May Cohort (C)",u:"students",c:"var(--gold)",mn:30,mx:250,st:5},
-    {k:"beds",l:"Student Beds",u:"beds",c:"var(--coral)",mn:50,mx:400,st:10},
-    {k:"facUnits",l:"Faculty Housing Units",u:"units",c:"var(--teal)",mn:20,mx:150,st:2}
-  ];
-  var h='<div style="max-width:620px">';
-  h+='<table class="pt"><tr><th style="text-align:left">Parameter</th><th style="text-align:left">Value</th><th style="text-align:left">Range</th></tr>';
-  for(var i=0;i<items.length;i++){
-    var it=items[i],v=e[it.k];
-    h+='<tr><td style="font-family:\'DM Sans\',sans-serif;font-weight:500">'+it.l+'</td>';
-    h+='<td><input type="number" value="'+v+'" min="'+it.mn+'" max="'+it.mx+'" step="'+it.st+'" style="width:70px" onchange="eUpd(\''+it.k+'\',Number(this.value))"> <span style="font-size:.6rem;color:var(--mut)">'+it.u+'</span></td>';
-    h+='<td style="font-size:.6rem;color:var(--mut)">'+F(it.mn)+' \u2013 '+F(it.mx)+'</td></tr>';
+function renderCurriculumBreakdownCardsDetailed(scenario){
+  var fields=["largeTBL","medClass","clinSkills","teachLab","simSuite","smallPBL","indep"];
+  var leftGroups=[CURRIC_GROUPS[0],CURRIC_GROUPS[1]];
+  var rightGroups=[CURRIC_GROUPS[2],CURRIC_GROUPS[3]];
+  function colHtml(s, groups){
+    return groups.map(function(g){
+      return '<div style="background:'+g.bg+';padding:8px 10px 10px">'+
+        '<div style="font-size:10px;font-weight:700;letter-spacing:.04em;color:'+g.tx+';margin-bottom:6px">'+g.label+'</div>'+
+        g.fields.map(function(fld){ return curricFieldHtml(s,g,fld); }).join("")+
+      '</div>';
+    }).join("");
   }
-  h+='</table>';
-  // Summary
-  h+='<div style="background:var(--bg);border:1.5px solid var(--bdr);border-radius:var(--r);padding:10px;margin-top:8px">';
-  h+='<div style="font-size:.82rem;font-weight:700;color:var(--navy);margin-bottom:4px">Enrollment Summary</div>';
-  h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:.78rem">';
-  h+='<div style="text-align:center;background:#fff;padding:6px;border-radius:6px"><div style="font-family:\'DM Mono\',monospace;font-size:1rem;font-weight:600;color:var(--navy)">'+F(e.preclinical)+'</div><div style="font-size:.6rem;color:var(--mut)">Preclinical</div></div>';
-  h+='<div style="text-align:center;background:#fff;padding:6px;border-radius:6px"><div style="font-family:\'DM Mono\',monospace;font-size:1rem;font-weight:600;color:var(--navy)">'+Math.round(e.preclinical/2)+'</div><div style="font-size:.6rem;color:var(--mut)">Admitted/Year</div></div>';
-  h+='<div style="text-align:center;background:#fff;padding:6px;border-radius:6px"><div style="font-family:\'DM Mono\',monospace;font-size:1rem;font-weight:600;color:var(--navy)">6</div><div style="font-size:.6rem;color:var(--mut)">Cohort Phases</div></div>';
-  h+='</div>';
-  h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px">';
-  h+='<div style="text-align:center;background:#fff;padding:6px;border-radius:6px"><div style="font-family:\'DM Mono\',monospace;font-size:.9rem;font-weight:600;color:var(--gold)">'+e.sept+'</div><div style="font-size:.6rem;color:var(--mut)">Sept Cohort</div></div>';
-  h+='<div style="text-align:center;background:#fff;padding:6px;border-radius:6px"><div style="font-family:\'DM Mono\',monospace;font-size:.9rem;font-weight:600;color:var(--gold)">'+e.jan+'</div><div style="font-size:.6rem;color:var(--mut)">Jan Cohort</div></div>';
-  h+='<div style="text-align:center;background:#fff;padding:6px;border-radius:6px"><div style="font-family:\'DM Mono\',monospace;font-size:.9rem;font-weight:600;color:var(--gold)">'+e.may+'</div><div style="font-size:.6rem;color:var(--mut)">May Cohort</div></div>';
-  h+='</div>';
-  h+='<div style="font-size:.65rem;color:var(--mut);margin-top:6px">'+e.beds+' student beds \u00b7 '+e.facUnits+' faculty housing units \u00b7 '+(e.sept+e.jan+e.may)+'/yr intake</div>';
-  h+='</div></div>';
-  ct.innerHTML=h;
+  var html='';
+  scenario.semesters.forEach(function(s){
+    var sum=fields.reduce(function(a,f){return a+(s[f]||0);},0);
+    var totalHrs=+(sum/100*40).toFixed(1);
+    var badgeColor = sum===100 ? "var(--ink2)" : "#DC2626";
+    html+='<div style="background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:12px">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--line)">'+
+        '<span style="font-size:15px;font-weight:700;color:var(--ink)">'+esc(s.name)+'</span>'+
+        '<span style="font-size:14px;font-weight:700;color:'+badgeColor+'" title="'+sum+'%">'+totalHrs+'h</span>'+
+      '</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr">'+
+        '<div>'+colHtml(s,leftGroups)+'</div>'+
+        '<div>'+colHtml(s,rightGroups)+'</div>'+
+      '</div>'+
+    '</div>';
+  });
+  return html;
 }
-function eUpd(k,v){
-  var e=S().enr;e[k]=v;
-  if(k==="total"){e.preclinical=Math.round(v*.52);e.sept=Math.round(e.preclinical/2*.5);e.jan=Math.round(e.preclinical/2*.3);e.may=Math.round(e.preclinical/2*.2)}
-  if(k==="preclinical"){e.sept=Math.round(v/2*.5);e.jan=Math.round(v/2*.3);e.may=Math.round(v/2*.2)}
+
+function renderCurriculumBreakdownCardsSimple(scenario){
+  var html='';
+  scenario.semesters.forEach(function(s){
+    var d=derivedCols(s); var sum=d.large+d.medium+d.small+d.indep;
+    var badgeColor = sum===100 ? "var(--ink2)" : "#DC2626";
+    html+='<div style="background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:12px">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--line)">'+
+        '<span style="font-size:15px;font-weight:700;color:var(--ink)">'+esc(s.name)+'</span>'+
+        '<span style="font-size:14px;font-weight:700;color:'+badgeColor+'">'+sum+'%</span>'+
+      '</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr">'+
+        '<div style="background:var(--emerald-bg);padding:8px 10px 10px">'+
+          '<div style="font-size:10px;font-weight:700;color:var(--emerald-tx);margin-bottom:6px">LARGE GROUP</div>'+
+          '<label style="display:block;font-size:11px;color:var(--emerald-tx);margin-bottom:2px">TBL %</label>'+
+          '<input type="number" value="'+s.largeTBL+'" oninput="updateSem('+s.id+',\'largeTBL\',this.value)" style="width:100%;font-size:16px;padding:6px 8px;border:1px solid var(--line2);border-radius:5px;box-sizing:border-box">'+
+        '</div>'+
+        '<div style="background:var(--sky-bg);padding:8px 10px 10px">'+
+          '<div style="font-size:10px;font-weight:700;color:var(--sky-tx);margin-bottom:6px">STUDY</div>'+
+          '<label style="display:block;font-size:11px;color:var(--sky-tx);margin-bottom:2px">Study %</label>'+
+          '<input type="number" value="'+s.indep+'" oninput="updateSem('+s.id+',\'indep\',this.value)" style="width:100%;font-size:16px;padding:6px 8px;border:1px solid var(--line2);border-radius:5px;box-sizing:border-box">'+
+        '</div>'+
+      '</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr">'+
+        '<div style="background:var(--orange-bg);padding:8px 10px 10px">'+
+          '<div style="font-size:10px;font-weight:700;color:var(--orange-tx);margin-bottom:6px">MEDIUM (derived)</div>'+
+          '<div style="font-size:16px;font-weight:700;color:var(--orange-tx)">'+d.medium+'%</div>'+
+        '</div>'+
+        '<div style="background:var(--amber-bg);padding:8px 10px 10px">'+
+          '<div style="font-size:10px;font-weight:700;color:var(--amber-tx);margin-bottom:6px">SMALL (derived)</div>'+
+          '<div style="font-size:16px;font-weight:700;color:var(--amber-tx)">'+d.small+'%</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  });
+  return html;
+}
+
+function esc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function $(s){ return document.querySelector(s); }
+var _renderTimer = null;
+var RENDER_DEBOUNCE_MS = 1200; // time an input stays editable before a full re-render commits it
+function setInp(id,val){
+  sc().inputs[id]=val;
+  clearTimeout(_renderTimer);
+  _renderTimer = setTimeout(render, RENDER_DEBOUNCE_MS);
+}
+
+function derivedCols(s){
+  return {
+    large:s.largeTBL||0,
+    medium:(s.medClass||0)+(s.clinSkills||0)+(s.teachLab||0),
+    small:(s.simSuite||0)+(s.smallPBL||0),
+    indep:s.indep||0
+  };
+}
+
+// ═══════════════════════════════════════════════
+// SCENARIO / SEMESTER MANAGEMENT
+// ═══════════════════════════════════════════════
+function addScenario(){
+  var n=nextScenId++;
+  SCENARIOS.push(makeDefaultScenario(n));
+  ACTIVE_SCENARIO=SCENARIOS.length-1;
+  render();
+}
+function duplicateScenario(){
+  var src = SCENARIOS[ACTIVE_SCENARIO];
+  var copy = JSON.parse(JSON.stringify(src));
+  copy.id = nextScenId++;
+  copy.name = src.name + ' (copy)';
+  // Give each semester a fresh id
+  copy.semesters.forEach(function(s){ s.id = nextSemId++; });
+  SCENARIOS.splice(ACTIVE_SCENARIO+1, 0, copy);
+  ACTIVE_SCENARIO = ACTIVE_SCENARIO+1;
   render();
 }
 
-// ═══ PROGRAM TAB ═══
-function rProg(ct,bk){
-  var rs=R(bk),g=G(bk),isG=(g===1),nsf=bN(bk),gsf=bG(bk),tgt=BMETA[bk].target;
-  var tNSF=isG?tgt:Math.round(tgt/g),mx=Math.round(tNSF/.75);if(nsf>mx*.95)mx=Math.round(nsf*1.1);
-  var bH=440,ntg=isG?"--":(100/g).toFixed(1)+"%",vr=gsf-tgt;
-  // Bar
-  var segs=[];for(var i=rs.length-1;i>=0;i--)segs.push(rs[i]);
-  var bh="";for(var i=0;i<segs.length;i++){var cat=segs[i],cn=catN(cat),px=Math.round(cn/mx*bH);
-    if(cn<=0)continue;var ek=bk+"-"+cat[0];var isE=expanded[ek]===true;
-    bh+='<div class="bs" style="height:'+px+'px;background:'+cat[2]+';cursor:pointer;outline:'+(isE?'2px solid var(--navy)':'none')+'" onclick="tgl(\''+ek+'\');return false">';
-    if(px>14)bh+='<span>'+cat[1]+'<br><small style="opacity:.7;font-size:.46rem;font-family:\'DM Mono\',monospace">'+F(cn)+'</small></span>';bh+='</div>'}
-  var tPx=Math.round(tNSF/mx*bH);
-  // Table — columns: expand, name, qty, NASF/unit, total, capacity, NASF/seat, typ%, pk%, driver, del
-  var th='<table class="pt"><tr><th style="width:14px"></th><th>Space / Room</th><th>Qty</th><th>'+BMETA[bk].unit+'/Unit</th><th>Total</th><th>Capacity</th><th>SF/Seat</th><th>Typ%</th><th>Pk%</th><th>Driver</th><th style="width:14px"></th></tr>';
-  for(var ci=0;ci<rs.length;ci++){
-    var cat=rs[ci],cn=catN(cat),ek=bk+"-"+cat[0],isE=expanded[ek]===true;
-    th+='<tr class="c" style="background:'+cat[2]+'" onclick="tgl(\''+ek+'\')">';
-    th+='<td><span class="ex '+(isE?'ex-d':'ex-r')+'"></span></td>';
-    th+='<td>'+cat[0]+' '+cat[1]+'</td><td></td><td></td><td style="font-family:\'DM Mono\',monospace">'+F(cn)+'</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
-    for(var ri=0;ri<cat[3].length;ri++){
-      var r=cat[3][ri],rn=r[2]*r[3];
-      var drv="";if(r[4]>0){var capLabel=r[4]===1?"single occ":r[4]===2?"double occ":r[4]+" seats";drv=capLabel}if(r[2]>1&&r[3]>0)drv=(drv?drv+" \u00b7 ":"")+r[2]+"\u00d7"+F(r[3]);if(r[5]>0)drv=(drv?drv+" \u00b7 ":"")+"Typ "+r[5]+"%";
-      var sfSeat=(r[4]>2&&r[3]>0)?Math.round(r[3]/r[4]):0;
-      var rKey=bk+"-"+ci+"-"+ri;var isSelR=(selR===rKey);
-      th+='<tr class="r'+(isE?'':' h')+'" style="'+(isSelR?"background:var(--lTeal);outline:1px solid var(--navy)":"")+'">';
-      th+='<td></td><td style="padding-left:18px;cursor:pointer" onclick="pickRoom(\''+rKey+'\')">'+r[1]+'</td>';
-      th+='<td><input type="number" value="'+r[2]+'" min="0" max="200" onchange="uR(\''+bk+'\','+ci+','+ri+',2,this.value)"></td>';
-      th+='<td><input type="number" value="'+r[3]+'" min="0" max="20000" step="10" onchange="uR(\''+bk+'\','+ci+','+ri+',3,this.value)"></td>';
-      th+='<td style="font-family:\'DM Mono\',monospace">'+(rn>0?F(rn):"\u2014")+'</td>';
-      th+='<td><input type="number" value="'+r[4]+'" min="0" max="500" onchange="uR(\''+bk+'\','+ci+','+ri+',4,this.value)"></td>';
-      th+='<td style="font-family:\'DM Mono\',monospace;color:var(--blue)">'+(sfSeat>0?sfSeat:"\u2014")+'</td>';
-      th+='<td style="color:'+(r[5]>=50?"var(--teal)":r[5]>=35?"var(--gold)":"var(--coral)")+'">'+(r[5]>0?r[5]+"%":"\u2014")+'</td>';
-      th+='<td style="color:'+(r[6]>=80?"var(--coral)":r[6]>=60?"var(--gold)":"var(--teal)")+'">'+(r[6]>0?r[6]+"%":"\u2014")+'</td>';
-      th+='<td style="font-size:.55rem;color:var(--mut)">'+drv+'</td>';
-      th+='<td><button class="d" onclick="dR(\''+bk+'\','+ci+','+ri+')">\u2715</button></td></tr>';
-    }
-  }
-  th+='<tr class="t"><td></td><td>TOTAL '+BMETA[bk].unit+'</td><td></td><td></td><td>'+F(nsf)+'</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
-  if(!isG)th+='<tr class="t"><td></td><td>GSF (\u00d7'+g+')</td><td></td><td></td><td>'+F(gsf)+'</td><td></td><td></td><td></td><td></td><td>N:G '+ntg+'</td><td></td></tr>';
-  th+='</table>';
-  th+='<div class="af"><select id="ac">';for(var ci=0;ci<rs.length;ci++)th+='<option value="'+ci+'">'+rs[ci][0]+' '+rs[ci][1]+'</option>';
-  th+='</select><input id="an" placeholder="Name" style="width:100px"><input id="aq" type="number" value="1" style="width:34px"><input id="af2" type="number" value="200" style="width:48px"><input id="as" type="number" value="0" style="width:34px" placeholder="Cap">';
-  th+='<button class="b bo" style="font-size:.6rem" onclick="aR(\''+bk+'\')">+ Add</button></div>';
-
-  var h='<div class="ly"><div class="bw"><div class="blb">'+(isG?"GSF":"NASF")+' vs Target</div>';
-  h+='<div class="bbx"><div class="bsk">'+bh+'</div><div class="btg" style="bottom:'+tPx+'px"><div class="btl">'+F(tgt)+' GSF</div></div></div>';
-  h+='<div class="bsub">'+F(nsf)+' '+(isG?"GSF":"NASF")+'</div>';
-  if(!isG)h+='<div class="bgsf">'+F(gsf)+' GSF</div><div class="bntg">N:G '+ntg+'</div>';
-  h+='<div class="bsub" style="margin-top:3px;color:'+(vr>0?"var(--coral)":"var(--teal)")+';font-weight:600">'+(vr>0?"+":"")+F(vr)+' GSF</div>';
-  h+='</div>'+th+'</div>';
-  ct.innerHTML=h;
+function deleteScenario(i){
+  if(SCENARIOS.length<=1){ alert('Cannot delete the last scenario.'); return; }
+  if(!confirm('Delete scenario "'+SCENARIOS[i].name+'"?')) return;
+  SCENARIOS.splice(i,1);
+  if(ACTIVE_SCENARIO>=SCENARIOS.length) ACTIVE_SCENARIO=SCENARIOS.length-1;
+  else if(ACTIVE_SCENARIO>i) ACTIVE_SCENARIO--;
+  render();
 }
 
-// ═══ SPACE & UTIL ═══
-function rSpace(ct){
-  var bks=["academic","clinic","residence","townhomes"],cs=["#2E75B6","#52D1ED","#F28D79","#66C6C1"];
-  var h='<div class="sc"><span>Scale:</span><select onchange="aScale=Number(this.value);render()">';
-  var scs=[[1.5,'1/32\\"=1\\\''], [3,'1/16\\"=1\\\''], [6,'1/8\\"=1\\\''], [12,'1/4\\"=1\\\'']];
-  for(var i=0;i<scs.length;i++)h+='<option value="'+scs[i][0]+'"'+(aScale===scs[i][0]?' selected':'')+'>'+scs[i][1]+'</option>';
-  h+='</select></div>';
+function switchScenario(i){ ACTIVE_SCENARIO=i; render(); }
+function addSemester(){
+  sc().semesters.push({id:nextSemId++,name:"New Semester",
+    sep:200,jan:150,may:100,
+    largeTBL:30,medClass:10,clinSkills:5,teachLab:5,simSuite:3,spExam:4,smallPBL:3,indep:40});
+  render();
+}
+function removeSemester(id){ sc().semesters=sc().semesters.filter(function(s){return s.id!==id;}); render(); }
+function updateSem(id,field,val){
+  var s=sc().semesters.find(function(x){return x.id===id;});
+  if(s) s[field]=field==="name"?val:(parseFloat(val)||0);
+  clearTimeout(_renderTimer);
+  _renderTimer = setTimeout(render, RENDER_DEBOUNCE_MS);
+}
+function setInputMode(m){ INPUT_MODE=m; render(); }
 
-  // Campus treemap — clickable buildings
-  var tot=cGSF(),W=960,H=90;
-  h+='<div class="cx" style="margin-bottom:8px"><div class="ct">Campus Program \u2014 '+F(tot)+' GSF <span style="font-size:.6rem;font-weight:400;color:var(--mut)">Click to select</span></div>';
-  h+='<svg width="'+W+'" height="'+H+'" style="display:block;border-radius:6px;overflow:hidden;cursor:pointer">';
-  var cx=0;
-  for(var i=0;i<bks.length;i++){var gsf=bG(bks[i]),w=(gsf/tot)*W,isSel=(sel===bks[i]);
-    h+='<rect x="'+(cx+1)+'" y="0" width="'+(w-2)+'" height="'+H+'" fill="'+(isSel?"#1B3A5C":cs[i])+'" rx="3" opacity=".9" onclick="pickBldg(\''+bks[i]+'\')" style="cursor:pointer"/>';
-    var tc=isSel?"#fff":"#fff";
-    if(w>55){h+='<text x="'+(cx+w/2)+'" y="'+(H*.3)+'" font-size="9" font-weight="700" text-anchor="middle" fill="'+tc+'" pointer-events="none">'+BMETA[bks[i]].label+'</text>';
-      h+='<text x="'+(cx+w/2)+'" y="'+(H*.55)+'" font-size="12" font-weight="600" font-family="DM Mono,monospace" text-anchor="middle" fill="'+tc+'" pointer-events="none">'+F(gsf)+'</text>';
-      h+='<text x="'+(cx+w/2)+'" y="'+(H*.75)+'" font-size="9" text-anchor="middle" fill="rgba(255,255,255,.7)" pointer-events="none">'+(gsf/tot*100).toFixed(1)+'%</text>'}
-    cx+=w}
-  h+='</svg></div>';
-
-  // Detail card for selected building
-  if(sel&&BMETA[sel]){
-    var bd=BMETA[sel],nsf=bN(sel),gsf2=bG(sel),g=bd.grossing,ntg2=g===1?"--":(100/g).toFixed(1)+"%";
-    h+='<div class="cx" style="margin-bottom:8px;border-left:4px solid '+(cs[bks.indexOf(sel)]||"var(--navy)")+'">';
-    h+='<div class="ct">'+bd.label+' \u2014 Detail</div>';
-    h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;font-size:.75rem">';
-    h+='<div><span style="color:var(--mut)">NASF</span><br><b style="font-family:\'DM Mono\',monospace;color:var(--navy)">'+F(nsf)+'</b></div>';
-    h+='<div><span style="color:var(--mut)">GSF</span><br><b style="font-family:\'DM Mono\',monospace;color:var(--navy)">'+F(gsf2)+'</b></div>';
-    h+='<div><span style="color:var(--mut)">N:G</span><br><b style="font-family:\'DM Mono\',monospace;color:var(--navy)">'+ntg2+'</b></div>';
-    h+='<div><span style="color:var(--mut)">Target</span><br><b style="font-family:\'DM Mono\',monospace;color:var(--navy)">'+F(bd.target)+'</b></div>';
-    h+='</div>';
-    // Category breakdown for selected building
-    var rs=R(sel);
-    h+='<div style="margin-top:8px">';
-    for(var ci=0;ci<rs.length;ci++){var cat=rs[ci],cn=catN(cat);if(cn<=0)continue;
-      var pct=(cn/nsf*100).toFixed(1);
-      h+='<div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;cursor:pointer" onclick="tgl(\''+sel+'-'+cat[0]+'\');render()">';
-      h+='<span style="width:8px;height:8px;border-radius:2px;background:'+cat[2]+';flex-shrink:0"></span>';
-      h+='<span style="flex:1;font-size:.7rem">'+cat[0]+' '+cat[1]+'</span>';
-      h+='<span style="font-family:\'DM Mono\',monospace;font-size:.68rem;color:var(--navy)">'+F(cn)+'</span>';
-      h+='<div style="width:80px;height:8px;background:#eee;border-radius:3px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+cat[2]+';border-radius:3px"></div></div>';
-      h+='<span style="font-size:.6rem;color:var(--mut);width:32px;text-align:right">'+pct+'%</span>';
-      h+='</div>';
-      // Show rooms if expanded
-      if(expanded[sel+"-"+cat[0]]){
-        for(var ri=0;ri<cat[3].length;ri++){var r=cat[3][ri];if(r[2]===0)continue;
-          h+='<div style="display:flex;gap:4px;margin-left:14px;margin-bottom:1px;font-size:.62rem;color:#555">';
-          h+='<span style="flex:1">'+r[1]+'</span>';
-          h+='<span style="font-family:\'DM Mono\',monospace;width:50px;text-align:right">'+F(r[2]*r[3])+'</span>';
-          h+='<span style="font-family:\'DM Mono\',monospace;width:35px;text-align:right;color:'+(r[5]>=50?"var(--teal)":r[5]>=35?"var(--gold)":"var(--coral)")+'">'+(r[5]>0?r[5]+"%":"\u2014")+'</span>';
-          h+='</div>'}
-      }
-    }
-    h+='</div></div>';
-  }
-
-  // Two-column: utilization + room plan
-  h+='<div class="g2">';
-  h+='<div class="cx"><div class="ct">Utilization \u2014 '+(sel?BMETA[sel].label:"Academic")+'</div>'+utSVG(sel||"academic")+'<div class="cs">50-hr week. Solid=typical, light=peak.</div></div>';
-  h+='<div class="cx"><div class="ct">Proportions \u2014 '+(sel?BMETA[sel].label:"Academic")+'</div>'+ppSVG(sel||"academic")+'</div>';
-  h+='</div>';
-
-  // Room detail card when a room is selected
-  if(selR){
-    var parts=selR.split("-");var rbk=parts[0],rci=Number(parts[1]),rri=Number(parts[2]);
-    var rBld=R(rbk);if(rBld&&rBld[rci]&&rBld[rci][3][rri]){
-      var rr=rBld[rci][3][rri],rcat=rBld[rci],rNasf=rr[2]*rr[3],rGsf=Math.round(rNasf*(G(rbk)===1?1:G(rbk)));
-      var sfSeat2=(rr[4]>2)?Math.round(rr[3]/rr[4]):0;
-      var rDim=Math.sqrt(rr[3]/12);
-      h+='<div class="cx" style="margin-top:8px;border-left:4px solid '+rcat[2]+';display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:6px">';
-      h+='<div><div style="font-size:.85rem;font-weight:700;color:var(--navy)">'+rr[1]+'</div><div style="font-size:.62rem;color:var(--mut)">'+rcat[0]+' '+rcat[1]+'</div></div>';
-      h+='<div><span style="font-size:.6rem;color:var(--mut)">NASF</span><br><b style="font-family:\'DM Mono\',monospace;color:var(--navy)">'+F(rNasf)+'</b></div>';
-      h+='<div><span style="font-size:.6rem;color:var(--mut)">Capacity</span><br><b style="font-family:\'DM Mono\',monospace;color:var(--navy)">'+(rr[4]>0?rr[4]+(rr[4]===1?" occ":" seats"):"\u2014")+'</b>'+(sfSeat2>0?'<br><span style="font-size:.58rem;color:var(--blue)">'+sfSeat2+' SF/seat</span>':'')+'</div>';
-      h+='<div><span style="font-size:.6rem;color:var(--mut)">Utilization</span><br><b style="font-family:\'DM Mono\',monospace;color:'+(rr[5]>=50?"var(--teal)":rr[5]>=35?"var(--gold)":"var(--coral)")+'">'+(rr[5]>0?rr[5]+"% typ":"\u2014")+'</b><br><span style="font-size:.58rem;color:var(--mut)">'+(rr[6]>0?rr[6]+"% peak":"")+'</span></div>';
-      h+='<div><span style="font-size:.6rem;color:var(--mut)">$/GSF \u00b7 Cost</span><br><b style="font-family:\'DM Mono\',monospace;color:var(--navy)">$'+rr[7]+'</b><br><span style="font-size:.58rem;color:var(--mut)">$'+F(Math.round(rGsf*rr[7]/1000))+'K</span></div>';
-      h+='</div>';
-    }
-  }
-
-  // Room plan
-  h+='<div class="cx" style="margin-top:8px"><div class="ct">Room Plan \u2014 '+(sel?BMETA[sel].label:"Academic")+' <span style="font-size:.6rem;font-weight:400;color:var(--mut)">Click a room for detail</span></div><div class="pb">'+rpSVG(sel||"academic")+'</div></div>';
-  ct.innerHTML=h;
+// ═══════════════════════════════════════════════
+// COMPUTE
+// ═══════════════════════════════════════════════
+function roomsNeeded(wkDemand,cap,fill,sessDay){
+  cap=cap||1; fill=fill||1; sessDay=sessDay||1;
+  var eff=cap*fill*sessDay*WEEKDAYS_PER_WEEK;
+  if(eff<=0) return {rooms:0,raw:0};
+  return {rooms:Math.ceil(wkDemand/eff),raw:wkDemand/eff};
 }
 
-// ═══ COST & SPACE ═══
-function rCost(ct){
-  var ef=Math.pow(1.04,3.5),bks=["academic","clinic","residence","townhomes"],cols=["#2E75B6","#52D1ED","#F28D79","#66C6C1"];
+function compute(){
+  var sems = sc().semesters;
+  var weeks = inp("academicWeeks")||13;
+  var cats  = ["largeTBL","medClass","clinSkills","teachLab","simSuite","spExam","smallPBL","examCenter","indep"];
 
-  // Clickable building selector bar
-  var tot=cGSF(),W=960,H=60;
-  var h='<svg width="'+W+'" height="'+H+'" style="display:block;border-radius:6px;overflow:hidden;cursor:pointer;margin-bottom:8px">';
-  var cx2=0;
-  for(var i=0;i<bks.length;i++){var gsf=bG(bks[i]),w=(gsf/tot)*W,isSel2=(sel===bks[i]);
-    h+='<rect x="'+(cx2+1)+'" y="0" width="'+(w-2)+'" height="'+H+'" fill="'+(isSel2?"#1B3A5C":cols[i])+'" rx="3" opacity=".9" onclick="pickBldg(\''+bks[i]+'\')" style="cursor:pointer"/>';
-    if(w>50){h+='<text x="'+(cx2+w/2)+'" y="'+(H*.4)+'" font-size="8" font-weight="700" text-anchor="middle" fill="#fff" pointer-events="none">'+BMETA[bks[i]].label+'</text>';
-      h+='<text x="'+(cx2+w/2)+'" y="'+(H*.7)+'" font-size="10" font-weight="600" font-family="DM Mono,monospace" text-anchor="middle" fill="#fff" pointer-events="none">$'+F(Math.round(bCost(bks[i],"mid")/1e6))+'M</text>'}
-    cx2+=w}h+='</svg>';
+  // For each category, compute weekly seat-session demand per cohort
+  // peakTotals = sum over semesters of max(sep,jan,may) × pct
+  // cohortTotals[cohort] = sum over semesters of cohort_students × pct
+  var peakTotals={}, cohortTotals={sep:{},jan:{},may:{}};
+  cats.forEach(function(c){ peakTotals[c]=0; COHORTS.forEach(function(co){ cohortTotals[co][c]=0; }); });
 
-  // Cost table
-  h+='<table class="kt"><tr><th>Building</th><th>GSF</th><th>$/GSF</th><th>Low</th><th>Mid</th><th>High</th></tr>';
-  var tL=0,tM=0,tH=0;
-  for(var i=0;i<bks.length;i++){var bk=bks[i],gsf3=bG(bk),lo=bCost(bk,"low"),mi=bCost(bk,"mid"),hi=bCost(bk,"high");
-    var rate=gsf3>0?Math.round(mi/gsf3):0;tL+=lo;tM+=mi;tH+=hi;
-    var isHL=(sel===bk);
-    h+='<tr style="'+(isHL?"background:#1B3A5C10;font-weight:700":"")+'cursor:pointer" onclick="pickBldg(\''+bk+'\')">';
-    h+='<td><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:'+cols[i]+';margin-right:4px"></span>'+BMETA[bk].label+'</td><td>'+F(gsf3)+'</td><td>$'+F(rate)+'</td>';
-    h+='<td>$'+F(Math.round(lo/1e6))+'M</td><td>$'+F(Math.round(mi/1e6))+'M</td><td>$'+F(Math.round(hi/1e6))+'M</td></tr>'}
-  h+='<tr class="a"><td>Construction</td><td>'+F(cGSF())+'</td><td></td><td>$'+F(Math.round(tL/1e6))+'M</td><td>$'+F(Math.round(tM/1e6))+'M</td><td>$'+F(Math.round(tH/1e6))+'M</td></tr>';
-  h+='<tr><td>Escalated (\u00d7'+ef.toFixed(3)+')</td><td colspan="2" style="text-align:left;font-size:.58rem;color:var(--mut)">4%/yr \u2192 2028.5</td>';
-  h+='<td>$'+F(Math.round(tL*ef/1e6))+'M</td><td>$'+F(Math.round(tM*ef/1e6))+'M</td><td>$'+F(Math.round(tH*ef/1e6))+'M</td></tr>';
-  h+='<tr class="a"><td>Project (\u00d71.30)</td><td colspan="2"></td>';
-  h+='<td>$'+F(Math.round(tL*ef*1.3/1e6))+'M</td><td>$'+F(Math.round(tM*ef*1.3/1e6))+'M</td><td>$'+F(Math.round(tH*ef*1.3/1e6))+'M</td></tr>';
-  h+='</table>';
+  // cohortHours[co][c] = seat-HOURS/wk (students × 40 × pct) — for display
+  // cohortTotals[co][c] = seat-SESSIONS/wk (÷ sessHrs) — for rooms & faculty
+  var cohortHours = {}; COHORTS.forEach(function(co){ cohortHours[co]={}; cats.forEach(function(c){ cohortHours[co][c]=0; }); });
+  sems.forEach(function(s){
+    cats.forEach(function(c){
+      var pct = (s[c]||0)/100;
+      var sessHrs = (c==="indep") ? (inp("indepSegmentHrs")||0.5) : (inp(c+"SessionHrs")||1.0);
+      var factorHrs  = TOTAL_WEEKLY_HOURS * pct;           // seat-hours/wk
+      var factorSess = factorHrs / sessHrs;                // seat-sessions/wk
+      COHORTS.forEach(function(co){
+        cohortHours[co][c]  += (s[co]||0) * factorHrs;
+        cohortTotals[co][c] += (s[co]||0) * factorSess;
+      });
+    });
+  });
+  // Peak = max cohort for each category (seat-sessions for rooms/faculty)
+  cats.forEach(function(c){
+    peakTotals[c] = Math.max.apply(null, COHORTS.map(function(co){ return cohortTotals[co][c]; }));
+  });
+  // Peak seat-HOURS (for display in bigstats)
+  var peakHours = {};
+  cats.forEach(function(c){
+    peakHours[c] = Math.max.apply(null, COHORTS.map(function(co){ return cohortHours[co][c]; }));
+  });
 
-  // Detail card for selected building cost breakdown
-  if(sel&&BMETA[sel]){
-    var bd=BMETA[sel],rs=R(sel),gsf4=bG(sel),ci2=bks.indexOf(sel);
-    h+='<div class="cx" style="margin-top:8px;border-left:4px solid '+cols[ci2]+'">';
-    h+='<div class="ct">'+bd.label+' \u2014 Cost by Category</div>';
-    var maxCat=0;
-    for(var ci=0;ci<rs.length;ci++){var cat=rs[ci],cn=catN(cat);var cg=Math.round(cn*(G(sel)===1?1:G(sel)));if(cg>maxCat)maxCat=cg}
-    for(var ci=0;ci<rs.length;ci++){var cat=rs[ci],cn=catN(cat);if(cn<=0)continue;
-      var cg=Math.round(cn*(G(sel)===1?1:G(sel)));
-      // Weighted cost for this category
-      var wN=0,wD=0;for(var ri=0;ri<cat[3].length;ri++){var r=cat[3][ri],rg=Math.round(r[2]*r[3]*(G(sel)===1?1:G(sel)));wN+=rg*r[7];wD+=rg}
-      var mid2=wD>0?Math.round(wN/wD):0;var catCost=cg*mid2;
-      h+='<div style="display:flex;align-items:center;gap:4px;margin-bottom:4px">';
-      h+='<span style="width:8px;height:8px;border-radius:2px;background:'+cat[2]+';flex-shrink:0"></span>';
-      h+='<span style="width:120px;font-size:.7rem">'+cat[1]+'</span>';
-      h+='<div style="flex:1;height:14px;background:#eee;border-radius:3px;overflow:hidden"><div style="height:100%;width:'+(cg/maxCat*100)+'%;background:'+cat[2]+';opacity:.7;border-radius:3px"></div></div>';
-      h+='<span style="font-family:\'DM Mono\',monospace;font-size:.65rem;width:55px;text-align:right;color:var(--navy)">'+F(cg)+' GSF</span>';
-      h+='<span style="font-family:\'DM Mono\',monospace;font-size:.65rem;width:50px;text-align:right;color:var(--mut)">$'+mid2+'</span>';
-      h+='<span style="font-family:\'DM Mono\',monospace;font-size:.65rem;width:55px;text-align:right;color:var(--navy)">$'+F(Math.round(catCost/1000))+'K</span>';
-      h+='</div>'}
-    h+='</div>';
-  }
+  // Rooms needed (based on peak)
+  var roomRes = {};
+  cats.forEach(function(c){
+    var cap  = c==="indep"?1:inp("r_"+c+"_cap");
+    var fill = inp("r_"+(c==="indep"?"indep":c)+"_fill")/100;
+    var sess = inp("r_"+(c==="indep"?"indep":c)+"_sess");
+    roomRes[c] = roomsNeeded(peakTotals[c], cap, fill, sess);
+  });
 
-  // Charts
-  h+='<div class="g2">';
-  h+='<div class="cx"><div class="ct">Cost Range</div>'+cbSVG()+'</div>';
-  h+='<div class="cx"><div class="ct">$/GSF Comparison</div>'+rbSVG()+'</div></div>';
-  h+='<div class="cx" style="margin-top:8px"><div class="ct">Campus GSF</div>'+wfSVG()+'</div>';
-  ct.innerHTML=h;
+  // Vacancy per cohort per category
+  // demand_rooms(cohort,cat) = ceil(cohortTotals[co][cat] / effPerRoom)
+  var vacRes = {};
+  cats.forEach(function(c){
+    var cap  = c==="indep"?1:inp("r_"+c+"_cap");
+    var fill = inp("r_"+(c==="indep"?"indep":c)+"_fill")/100;
+    var sess = inp("r_"+(c==="indep"?"indep":c)+"_sess");
+    var eff  = cap*(fill||1)*(sess||1)*WEEKDAYS_PER_WEEK;
+    var total= roomRes[c].rooms;
+    vacRes[c]={total:total};
+    COHORTS.forEach(function(co){
+      var rawUtil   = (eff>0 && total>0) ? cohortTotals[co][c] / (total * eff) * 100 : 0;
+      rawUtil = Math.min(rawUtil, 100);
+      var demanded  = eff>0 ? Math.ceil(cohortTotals[co][c]/eff) : 0;
+      demanded = Math.min(demanded, total);
+      vacRes[c][co]={demanded:demanded, vacant:total-demanded,
+        pct:Math.round(rawUtil),          // continuous % for bar width
+        pctExact:rawUtil,                 // for label display
+        roomsLabel:demanded+"/"+total};
+    });
+    // Which cohort is lowest demand?
+    var minDemand = Math.min.apply(null, COHORTS.map(function(co){return cohortTotals[co][c];}));
+    vacRes[c].troughCohort = COHORTS.reduce(function(best,co){
+      return cohortTotals[co][c]<=minDemand ? co : best;
+    }, COHORTS[0]);
+  });
+
+  // Faculty (based on peak)
+  var facHrs={}, totalFacHrs=0;
+  cats.forEach(function(c){
+    if(c==="indep"){ facHrs[c]=0; return; }
+    var sessHrs    = inp(c+"SessionHrs")||1.0;
+    var facPerSess = inp(c+"Faculty")||0;
+    var cap        = inp("r_"+c+"_cap")||1;
+    var fill       = (inp("r_"+c+"_fill")||100)/100;
+    var effCap     = cap * fill;   // effective seats per section (fill rate applied)
+    var sectWk     = peakTotals[c] / effCap;
+    facHrs[c]      = sectWk * sessHrs * facPerSess;
+    totalFacHrs   += facHrs[c];
+  });
+  var facHrsPerWeek = inp("facultyHrsPerWeek")||12.5;
+  var facultyFTE    = totalFacHrs / facHrsPerWeek;
+  var teachPct      = (inp("facultyTeachingPct")||80)/100;
+  var staffNeeded   = teachPct>0 ? facultyFTE/teachPct : 0;
+
+  // Grouped totals (peak)
+  var ssLarge  = peakTotals.largeTBL;
+  var ssMedium = peakTotals.medClass+peakTotals.clinSkills+peakTotals.teachLab;
+  var ssSmall  = peakTotals.simSuite+peakTotals.spExam+peakTotals.smallPBL;
+  var ssIndep  = peakTotals.indep;
+
+  var sectLarge  = ssLarge  / (inp("r_largeTBL_cap")||1);
+  var sectMedium = ssMedium / (inp("r_medClass_cap")||1);
+  var sectSmall  = ssSmall  / (inp("r_smallPBL_cap")||1);
+
+  return {peakTotals,peakHours,cohortTotals,cohortHours,roomRes,vacRes,facHrs,totalFacHrs,facultyFTE,staffNeeded,
+    ssLarge,ssMedium,ssSmall,ssIndep,sectLarge,sectMedium,sectSmall,
+    weeks,facHrsPerWeek,teachPct};
 }
 
-// ═══ SVG ═══
-function tmSVG(){var W=960,H=110,bks=["academic","clinic","residence","townhomes"],cs=["#2E75B6","#52D1ED","#F28D79","#66C6C1"],tot=cGSF(),s='<svg width="'+W+'" height="'+H+'" style="display:block;border-radius:6px;overflow:hidden">',cx=0;
-  for(var i=0;i<bks.length;i++){var gsf=bG(bks[i]),w=(gsf/tot)*W;
-    s+='<rect x="'+(cx+1)+'" y="0" width="'+(w-2)+'" height="'+H+'" fill="'+cs[i]+'" rx="3" opacity=".85"/>';
-    if(w>55){s+='<text x="'+(cx+w/2)+'" y="'+(H*.3)+'" font-size="9" font-weight="700" text-anchor="middle" fill="#fff">'+BMETA[bks[i]].label+'</text>';
-      s+='<text x="'+(cx+w/2)+'" y="'+(H*.55)+'" font-size="12" font-weight="600" font-family="DM Mono,monospace" text-anchor="middle" fill="#fff">'+F(gsf)+'</text>';
-      s+='<text x="'+(cx+w/2)+'" y="'+(H*.75)+'" font-size="9" text-anchor="middle" fill="rgba(255,255,255,.8)">'+(gsf/tot*100).toFixed(1)+'%</text>'}
-    cx+=w}s+='</svg>';return s}
+// ═══════════════════════════════════════════════
+// RENDER HELPERS
+// ═══════════════════════════════════════════════
+function resultRow(label,val,sub,cls,bold){
+  return '<div class="result-row'+(bold?" bold":"")+'">'+
+    '<span class="rlabel">'+label+'</span>'+
+    '<span><span class="rvalue '+(cls||"")+'">'+val+'</span>'+
+    (sub?'<span class="rsub">'+sub+'</span>':'')+
+    '</span></div>';
+}
+function bigStat(label,val,color){
+  return '<div class="bigstat '+color+'">'+
+    '<div class="bigstat-label">'+label+'</div>'+
+    '<div class="bigstat-value">'+val+'</div></div>';
+}
+function assumeRow(id,label,def,type,step){
+  var v=sc().inputs[id]!==undefined?sc().inputs[id]:def;
+  return '<div class="assume-row"><span>'+label+'</span>'+
+    '<input type="'+type+'" step="'+(step||"any")+'" value="'+v+'" oninput="setInp(\''+id+'\',this.value)"></div>';
+}
+function pctBadge(curr,prev,suf){
+  if(!prev||prev===0) return "";
+  var p=Math.round((curr-prev)/prev*100);
+  var c=curr>=prev?"#065F46":"#991B1B";
+  return ' <span style="font-size:9px;font-weight:700;color:'+c+'">'+(p>=0?"+":"")+p+(suf||"%")+'</span>';
+}
 
-function rpSVG(bk){var rs=R(bk),Sc=aScale,G2=Math.max(Sc*.4,2),CG=Sc*1.5,LH=14,MW=960,s='',cy=3;
-  for(var ci=0;ci<rs.length;ci++){var cat=rs[ci],cn=catN(cat);if(cn<=0)continue;
-    var ek=bk+"-"+cat[0];
-    s+='<rect x="2" y="'+cy+'" width="'+(MW-4)+'" height="'+LH+'" fill="'+cat[2]+'" opacity=".3" rx="2" style="cursor:pointer" onclick="tgl(\''+ek+'\')"/>';
-    s+='<text x="5" y="'+(cy+10)+'" font-size="9" font-weight="700" fill="#404040" pointer-events="none">'+cat[0]+' '+cat[1]+' \u2014 '+F(cn)+'</text>';
-    var x=2,ry=cy+LH+G2,rh=0;
-    for(var ri=0;ri<cat[3].length;ri++){var r=cat[3][ri];if(r[2]===0||r[3]===0)continue;
-      for(var u=0;u<r[2];u++){var a=r[3],k=Math.sqrt(a/12),pw=Math.max(4*k*Sc/5,5),ph=Math.max(3*k*Sc/5,4);
-        if(x+pw>MW-2){x=2;ry+=rh+G2;rh=0}
-        var rKey=bk+"-"+ci+"-"+ri;var isSel3=(selR===rKey);
-        s+='<rect x="'+x+'" y="'+ry+'" width="'+pw+'" height="'+ph+'" fill="'+(isSel3?"#1B3A5C":cat[2])+'" stroke="'+(isSel3?"#FEB522":"rgba(0,0,0,.1)")+'" stroke-width="'+(isSel3?"2":".5")+'" rx="1" style="cursor:pointer" onclick="pickRoom(\''+rKey+'\')"/>';
-        if(pw>18&&ph>8){var fs=Math.min(Math.max(pw*.22,4),9);s+='<text x="'+(x+pw/2)+'" y="'+(ry+ph/2+fs*.3)+'" font-size="'+fs+'" text-anchor="middle" fill="'+(isSel3?"#fff":"#404040")+'" font-weight="600" pointer-events="none">'+(r[2]>1?r[1].substring(0,3)+(u+1):r[1].substring(0,10))+'</text>'}
-        x+=pw+G2;rh=Math.max(rh,ph)}}
-    cy=ry+rh+CG}
-  return '<svg width="'+MW+'" height="'+(cy+3)+'" style="display:block">'+s+'</svg>'}
+// ═══════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════
+function renderAdminBox(){
+  // Cohort totals — same logic as renderNSFRows
+  var sepTotal = sc().semesters.reduce(function(a,s){ return a+(s.sep||0); },0);
+  var janTotal = sc().semesters.reduce(function(a,s){ return a+(s.jan||0); },0);
+  var mayTotal = sc().semesters.reduce(function(a,s){ return a+(s.may||0); },0);
+  var totalStu = Math.max(sepTotal, janTotal, mayTotal);
 
-function utSVG(bk){var rs=R(bk),items=[],seen={};
-  for(var ci=0;ci<rs.length;ci++){var cat=rs[ci];for(var ri=0;ri<cat[3].length;ri++){var r=cat[3][ri];if(r[2]===0||r[5]===0)continue;
-    var k=r[1];if(!seen[k]){seen[k]=true;var rKey=bk+"-"+ci+"-"+ri;items.push({n:(r[2]>1?r[1]+"("+r[2]+")":r[1]).substring(0,20),t:r[5],p:r[6],cl:cat[2],rk:rKey})}}}
-  items.sort(function(a,b){return b.t-a.t});if(items.length>15)items=items.slice(0,15);
-  var W=460,rh=16,H=items.length*rh+4,s='<svg width="'+W+'" height="'+H+'" style="display:block">';
-  for(var i=0;i<items.length;i++){var u=items[i],y=i*rh;var isSel4=(selR===u.rk);
-    s+='<text x="105" y="'+(y+11)+'" font-size="8" text-anchor="end" fill="'+(isSel4?"#1B3A5C":"#404040")+'" font-weight="'+(isSel4?"700":"400")+'" style="cursor:pointer" onclick="pickRoom(\''+u.rk+'\')">'+u.n+'</text>';
-    s+='<rect x="108" y="'+y+'" width="'+(u.p*2.6)+'" height="'+(rh-2)+'" fill="'+u.cl+'" opacity=".25" rx="2" style="cursor:pointer" onclick="pickRoom(\''+u.rk+'\')"/>';
-    s+='<rect x="108" y="'+y+'" width="'+(u.t*2.6)+'" height="'+(rh-2)+'" fill="'+(isSel4?"#1B3A5C":u.cl)+'" opacity=".85" rx="2" style="cursor:pointer" onclick="pickRoom(\''+u.rk+'\')"/>';
-    s+='<text x="'+(111+u.t*2.6)+'" y="'+(y+10)+'" font-size="7" fill="#404040" font-family="DM Mono,monospace" pointer-events="none">'+u.t+'%</text>'}
-  s+='</svg>';return s}
+  var base2500  = Math.min(totalStu, 2500);
+  var above2500 = Math.max(0, totalStu - 2500);
+  var baseStaff  = base2500  / 25;
+  var extraStaff = above2500 / 40;
+  var totalAdmin = Math.round(baseStaff + extraStaff);
+  var adminSFPerPerson = inp('admin_sf_per_person') || 160;
+  var adminNSF   = totalAdmin * adminSFPerPerson;
 
-function ppSVG(bk){var rs=R(bk),tn=bN(bk),W=460,H=130,s='<svg width="'+W+'" height="'+H+'" style="display:block;border-radius:6px;overflow:hidden">',cx=0;
-  for(var ci=0;ci<rs.length;ci++){var cat=rs[ci],cn=catN(cat);if(cn<=0)continue;var w=(cn/tn)*W;var ek=bk+"-"+cat[0];var isE5=expanded[ek]===true;
-    s+='<rect x="'+(cx+.5)+'" y="0" width="'+(w-1)+'" height="'+H+'" fill="'+(isE5?"#1B3A5C":cat[2])+'" rx="2" opacity=".85" style="cursor:pointer" onclick="tgl(\''+ek+'\')"/>';
-    var fc=isE5?"#fff":"#1B3A5C";
-    if(w>38){s+='<text x="'+(cx+w/2)+'" y="'+(H*.32)+'" font-size="'+(w>70?8:6)+'" font-weight="700" text-anchor="middle" fill="'+fc+'" pointer-events="none">'+cat[1]+'</text>';
-      s+='<text x="'+(cx+w/2)+'" y="'+(H*.52)+'" font-size="'+(w>50?10:7)+'" font-weight="600" font-family="DM Mono,monospace" text-anchor="middle" fill="'+fc+'" pointer-events="none">'+F(cn)+'</text>';
-      s+='<text x="'+(cx+w/2)+'" y="'+(H*.7)+'" font-size="8" font-weight="600" text-anchor="middle" fill="'+fc+'" pointer-events="none">'+(cn/tn*100).toFixed(1)+'%</text>'}
-    cx+=w}s+='</svg>';return s}
+  var box = $("#adminStaffBox");
+  if(!box) return;
+  box.innerHTML =
+    '<div class="fte-box" style="margin-top:0">'+
+      '<div class="fte-label">Total Administrative Staff</div>'+
+      '<div class="fte-value">'+totalAdmin+'</div>'+
+      '<div class="fte-sub">'+
+        (totalStu <= 2500
+          ? totalStu+' students ÷ 25 = '+Math.round(baseStaff)+' staff'
+          : '2,500 students ÷ 25 = '+Math.round(baseStaff)+' base staff'
+            +' + '+(totalStu-2500)+' students ÷ 40 = '+Math.round(extraStaff)+' additional')+
+      '</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)">'+
 
-function wfSVG(){var bks=["academic","clinic","residence","townhomes"],cs=["#2E75B6","#52D1ED","#F28D79","#66C6C1"],tot=cGSF();
-  var W=560,H=150,bW=70,gp=25,s='<svg width="'+W+'" height="'+H+'" style="display:block">',x=30;
-  for(var i=0;i<bks.length;i++){var v=bG(bks[i]),h2=v/tot*110;var isSel6=(sel===bks[i]);
-    s+='<rect x="'+x+'" y="'+(120-h2)+'" width="'+bW+'" height="'+h2+'" fill="'+(isSel6?"#1B3A5C":cs[i])+'" rx="3" opacity=".85" style="cursor:pointer" onclick="pickBldg(\''+bks[i]+'\')"/>';
-    s+='<text x="'+(x+bW/2)+'" y="'+(115-h2)+'" font-size="8" font-weight="600" text-anchor="middle" fill="'+(isSel6?"#1B3A5C":cs[i])+'" font-family="DM Mono,monospace" pointer-events="none">'+F(v)+'</text>';
-    s+='<text x="'+(x+bW/2)+'" y="138" font-size="7" text-anchor="middle" fill="#404040" pointer-events="none">'+BMETA[bks[i]].label.split(" ")[0]+'</text>';x+=bW+gp}
-  s+='<rect x="'+x+'" y="10" width="'+bW+'" height="110" fill="#1B3A5C" rx="3"/>';
-  s+='<text x="'+(x+bW/2)+'" y="5" font-size="9" font-weight="700" text-anchor="middle" fill="#1B3A5C" font-family="DM Mono,monospace">'+F(tot)+'</text>';
-  s+='<text x="'+(x+bW/2)+'" y="138" font-size="7" font-weight="700" text-anchor="middle" fill="#1B3A5C">Campus</text>';
-  s+='</svg>';return s}
+        '<div style="background:#F8FAFC;border:1px solid var(--line);border-radius:6px;padding:10px">'+
+          '<div class="fte-label">Student : Admin Ratio</div>'+
+          '<div style="margin-top:6px">'+
+            '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'+
+              '<span style="font-size:11px;color:var(--ink2);width:100px">Up to 2,500 stu</span>'+
+              '<span style="font-size:16px;font-weight:900">1 : 25</span>'+
+              '<span style="font-size:11px;color:var(--ink2)">→ '+Math.round(baseStaff)+' staff</span>'+
+            '</div>'+
+            (above2500 > 0
+              ? '<div style="display:flex;align-items:center;gap:8px">'+
+                  '<span style="font-size:11px;color:var(--ink2);width:100px">Above 2,500 stu</span>'+
+                  '<span style="font-size:16px;font-weight:900">1 : 40</span>'+
+                  '<span style="font-size:11px;color:var(--ink2)">→ '+Math.round(extraStaff)+' staff</span>'+
+                '</div>'
+              : '<div style="font-size:11px;color:#94A3B8;font-style:italic">No students above 2,500 threshold</div>')+
+          '</div>'+
+        '</div>'+
 
-function cbSVG(){var bks=["academic","clinic","residence","townhomes"],cs=["#2E75B6","#52D1ED","#F28D79","#66C6C1"],mx=0;
-  for(var i=0;i<bks.length;i++){var hi=bCost(bks[i],"high");if(hi>mx)mx=hi}if(mx===0)mx=1;
-  var W=460,bh=26,H=bks.length*bh+6,s='<svg width="'+W+'" height="'+H+'" style="display:block">';
-  for(var i=0;i<bks.length;i++){var bk=bks[i],lo=bCost(bk,"low"),mi=bCost(bk,"mid"),hi=bCost(bk,"high"),y=i*bh;
-    var wH=(hi/mx*320),wM=(mi/mx*320),wL=(lo/mx*320);
-    s+='<text x="105" y="'+(y+16)+'" font-size="8" text-anchor="end" fill="#404040">'+BMETA[bk].label+'</text>';
-    s+='<rect x="108" y="'+y+'" width="'+wH+'" height="'+(bh-4)+'" fill="'+cs[i]+'" opacity=".2" rx="3"/>';
-    s+='<rect x="108" y="'+y+'" width="'+wM+'" height="'+(bh-4)+'" fill="'+cs[i]+'" opacity=".5" rx="3"/>';
-    s+='<rect x="108" y="'+y+'" width="'+wL+'" height="'+(bh-4)+'" fill="'+cs[i]+'" opacity=".85" rx="3"/>';
-    s+='<text x="'+(111+wH)+'" y="'+(y+14)+'" font-size="6" fill="#404040" font-family="DM Mono,monospace">$'+F(Math.round(lo/1e6))+'M\u2013$'+F(Math.round(hi/1e6))+'M</text>'}
-  s+='</svg>';return s}
+        '<div style="background:#F8FAFC;border:1px solid var(--line);border-radius:6px;padding:10px">'+
+          '<div class="fte-label">Admin NSF</div>'+
+          '<div style="font-size:26px;font-weight:900;color:var(--ink);margin-top:4px">'+Math.round(adminNSF/1000)+'K sf</div>'+
+          '<div style="display:flex;align-items:center;gap:5px;margin-top:4px;font-size:11px;color:var(--ink2)">'+
+            '<span>'+totalAdmin+' staff ×</span>'+
+            '<input type="number" step="1" value="'+adminSFPerPerson+'" oninput="setInp(\'admin_sf_per_person\',this.value)" style="width:46px;font-size:11px;padding:2px 4px;border:1px solid var(--line2);border-radius:4px">'+
+            '<span>sf = '+adminNSF.toLocaleString()+' sf</span>'+
+          '</div>'+
+          (totalStu > 2500
+            ? '<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line)">'+
+                '<div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--ink2);margin-bottom:4px">Breakdown</div>'+
+                '<div style="font-size:11px;color:var(--ink2)">Base (≤2,500): '+Math.round(baseStaff)+' × 160 = '+Math.round(baseStaff*160).toLocaleString()+' sf</div>'+
+                '<div style="font-size:11px;color:var(--ink2)">Extra (>2,500): '+Math.round(extraStaff)+' × 160 = '+(Math.round(extraStaff)*160).toLocaleString()+' sf</div>'+
+              '</div>'
+            : '')+
+        '</div>'+
 
-function rbSVG(){var bks=["academic","clinic","residence","townhomes"],cs=["#2E75B6","#52D1ED","#F28D79","#66C6C1"],mxR=0;
-  for(var i=0;i<bks.length;i++){var rs=R(bks[i]),wN=0,wD=0;
-    for(var ci=0;ci<rs.length;ci++){var cat=rs[ci];for(var ri=0;ri<cat[3].length;ri++){var r=cat[3][ri],rg=Math.round(r[2]*r[3]*(G(bks[i])===1?1:G(bks[i])));wN+=rg*r[7];wD+=rg}}
-    var hi=Math.round((wD>0?wN/wD:0)*1.15);if(hi>mxR)mxR=hi}if(mxR===0)mxR=1;
-  var W=460,bh=28,H=bks.length*bh+6,s='<svg width="'+W+'" height="'+H+'" style="display:block">';
-  for(var i=0;i<bks.length;i++){var bk=bks[i],rs=R(bk),wN=0,wD=0;
-    for(var ci=0;ci<rs.length;ci++){var cat=rs[ci];for(var ri=0;ri<cat[3].length;ri++){var r=cat[3][ri],rg=Math.round(r[2]*r[3]*(G(bk)===1?1:G(bk)));wN+=rg*r[7];wD+=rg}}
-    var mid=wD>0?Math.round(wN/wD):0;if(mid===0)continue;var lo=Math.round(mid*.85),hi=Math.round(mid*1.15),y=i*bh;
-    var x1=(lo/mxR*320)+108,x2=(hi/mxR*320)+108,xm=(mid/mxR*320)+108;
-    s+='<text x="105" y="'+(y+17)+'" font-size="8" text-anchor="end" fill="#404040">'+BMETA[bk].label+'</text>';
-    s+='<rect x="'+x1+'" y="'+y+'" width="'+(x2-x1)+'" height="'+(bh-4)+'" fill="'+cs[i]+'" opacity=".3" rx="3"/>';
-    s+='<rect x="'+xm+'" y="'+y+'" width="3" height="'+(bh-4)+'" fill="'+cs[i]+'" rx="1"/>';
-    s+='<text x="'+(x1-2)+'" y="'+(y+15)+'" font-size="6" text-anchor="end" fill="#888" font-family="DM Mono,monospace">$'+lo+'</text>';
-    s+='<text x="'+(x2+3)+'" y="'+(y+15)+'" font-size="6" fill="#888" font-family="DM Mono,monospace">$'+hi+'</text>'}
-  s+='</svg>';return s}
+      '</div>'+
+      '<div style="margin-top:10px;padding:8px 10px;background:#F1F5F9;border-radius:5px;font-size:11px;color:#64748B">'+
+        '<b>Student count used:</b> largest cohort column total — '+
+        'Sep: '+sepTotal+', Jan: '+janTotal+', May: '+mayTotal+' → using <b>'+totalStu+'</b>'+
+      '</div>'+
+    '</div>';
+}
 
-// ═══ INTERACTIONS ═══
-function tgl(k){expanded[k]=!expanded[k];render()}
-function pickBldg(bk){sel=(sel===bk)?null:bk;selR=null;render()}
-function pickRoom(rk){selR=(selR===rk)?null:rk;render()}
-function uR(bk,ci,ri,f,v){S().rooms[bk][ci][3][ri][f]=Number(v);render()}
-function dR(bk,ci,ri){S().rooms[bk][ci][3].splice(ri,1);render()}
-function aR(bk){var ci=Number(document.getElementById("ac").value),nm=document.getElementById("an").value||"New Room";
-  var q=Number(document.getElementById("aq").value)||1,nf=Number(document.getElementById("af2").value)||200,se=Number(document.getElementById("as").value)||0;
-  var n=0;var rs=R(bk);for(var c=0;c<rs.length;c++)n+=rs[c][3].length;
-  rs[ci][3].push([n+1,nm,q,nf,se,0,0,500]);expanded[bk+"-"+rs[ci][0]]=true;render()}
+function renderNSFRows(){
+  var onStaff  = window._onStaffFTE  || Math.round((inp("facultyHrsPerWeek")||12) > 0 ? 0 : 0);
+  var visiting = window._visitingFTE || 0;
+  var totalStaff = window._totalStaff || 0;
 
-function doSave(){
-  var p={exportDate:new Date().toISOString(),version:"dashboard-v8",scenarios:SCENARIOS,meta:BMETA,computed:{campus:cGSF()}};
-  var bl=new Blob([JSON.stringify(p,null,2)],{type:"application/json"});
-  var a=document.createElement("a");a.href=URL.createObjectURL(bl);a.download="RUSM_Program_"+new Date().toISOString().slice(0,10)+".json";a.click();
-  var b=document.getElementById("sv");b.textContent="\u2713 Saved";b.style.background="#548235";
-  setTimeout(function(){b.textContent="Export JSON";b.style.background=""},3000)}
+  // Faculty NSF
+  var bostonFac   = 28000;
+  var calcFac     = onStaff * (inp('fac_onstaff_sf')||160) + visiting * (inp('fac_visiting_sf')||60);
 
-// ═══ LOGIN ═══
-function doLogin(){
-  var u=document.getElementById("loginUser").value;
-  var p=document.getElementById("loginPass").value;
-  if(u==="Covista"&&p==="Sandy_Simulation"){
-    document.getElementById("loginOverlay").style.display="none";
-    document.getElementById("mainApp").style.display="";
-    render();
+  // Student count: largest single cohort column total
+  var sepTotal = sc().semesters.reduce(function(a,s){ return a+(s.sep||0); },0);
+  var janTotal = sc().semesters.reduce(function(a,s){ return a+(s.jan||0); },0);
+  var mayTotal = sc().semesters.reduce(function(a,s){ return a+(s.may||0); },0);
+  var totalMaxStu = Math.max(sepTotal, janTotal, mayTotal);
+
+  // Admin NSF
+  var bostonAdmin = 29000;
+  var adminBase = Math.min(totalMaxStu, 2500) / 25;
+  var adminExtra = Math.max(0, totalMaxStu - 2500) / 40;
+  var adminStaff = adminBase + adminExtra;
+  var calcAdmin  = Math.round(adminStaff) * (inp('admin_sf_per_person')||160);
+
+  // Social NSF
+  var bostonSocial = 76000;
+  var calcSocial   = totalMaxStu * 29;
+
+  // Support NSF
+  var bostonSupport = 44000;
+  var calcSupport   = Math.min(totalMaxStu, 2500) * 18 + Math.max(0, totalMaxStu - 2500) * 9;
+
+  function nsfRow(label, boston, current){
+    var delta   = current - boston;
+    var pct     = delta / boston * 100;
+    var ds      = delta >= 0 ? "+" : "";
+    var dc      = delta >= 0 ? "delta" : "delta negative";
+    var bostonK = Math.round(boston/1000);
+    var currK   = Math.round(current/1000);
+    var deltaK  = Math.round(delta/1000);
+    return '<div style="margin-top:10px">'
+      + '<div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--ink2);margin-bottom:6px">'+label+'</div>'
+      + '<div class="nsf-compare">'
+      + '<div class="nsf-col"><div class="nsf-col-label">Boston Workshop</div>'
+      + '<div class="nsf-col-value">'+bostonK+'K</div>'
+      + '<div class="nsf-col-sub">'+boston.toLocaleString()+' sf</div></div>'
+      + '<div class="nsf-col"><div class="nsf-col-label">Calculated Current</div>'
+      + '<div class="nsf-col-value">'+currK+'K</div>'
+      + '<div class="nsf-col-sub" style="font-size:9px">'
+      + (label.indexOf('Faculty')>=0
+          ? onStaff+'×160sf + '+visiting+'×60sf'
+          : label.indexOf('Admin')>=0
+            ? Math.round(adminStaff)+' admin staff × 160sf'
+            : label.indexOf('Social')>=0
+              ? totalMaxStu.toLocaleString()+' students × 29sf'
+              : Math.min(totalMaxStu,2500)+' × 18sf + '+Math.max(0,totalMaxStu-2500)+' × 9sf')
+      + '</div></div>'
+      + '<div class="nsf-col '+dc+'"><div class="nsf-col-label">Delta</div>'
+      + '<div style="display:flex;align-items:baseline;gap:8px">'
+      + '<div class="nsf-delta-value">'+ds+deltaK+'K</div>'
+      + '<div class="nsf-delta-pct">'+ds+pct.toFixed(1)+'%</div>'
+      + '</div></div>'
+      + '</div></div>';
+  }
+
+  var box = $("#nsfExtRows");
+  if(box) box.innerHTML =
+    nsfRow("Faculty Program",  bostonFac,    calcFac)
+    + nsfRow("Admin Program",  bostonAdmin,  calcAdmin)
+    + nsfRow("Social Program", bostonSocial, calcSocial)
+    + nsfRow("Support Program",bostonSupport,calcSupport);
+
+  // ── Total Program NSF — stacked comparison bars ──
+  var bostonAcademic = NSF_V58;
+  var calcAcademic    = window._academicNSFCalc || 0;
+  var totalCats=[
+    {label:"Academic", boston:bostonAcademic, calc:calcAcademic, color:"#0D9488"},
+    {label:"Faculty",  boston:bostonFac,      calc:calcFac,      color:"#3B82F6"},
+    {label:"Admin",    boston:bostonAdmin,    calc:calcAdmin,    color:"#1E3A8A"},
+    {label:"Social",   boston:bostonSocial,   calc:calcSocial,   color:"#DAA520"},
+    {label:"Support",  boston:bostonSupport,  calc:calcSupport,  color:"#6B7280"}
+  ];
+  var bostonTotal = totalCats.reduce(function(a,c){return a+c.boston;},0);
+  var calcTotal    = totalCats.reduce(function(a,c){return a+c.calc;},0);
+  var maxTotal     = Math.max(bostonTotal, calcTotal, 1);
+  var totalDelta   = calcTotal - bostonTotal;
+  var totalPct     = bostonTotal ? (totalDelta/bostonTotal*100) : 0;
+  var fmtK         = function(n){ return Math.round(n/1000)+"K"; };
+
+  function stackedBar(key){
+    var segs = totalCats.map(function(c){
+      var val = c[key]||0;
+      var w = (val/maxTotal*100);
+      return '<div title="'+c.label+': '+fmtK(val)+' sf" style="width:'+w+'%;background:'+c.color+';height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;box-sizing:border-box;'+(w>0?'border-right:1px solid rgba(255,255,255,.6)':'')+'">'+
+        (w>6?'<span style="font-size:9px;font-weight:700;color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.3);white-space:nowrap">'+fmtK(val)+'</span>':'')+
+      '</div>';
+    }).join('');
+    return '<div style="display:flex;height:34px;border-radius:6px;overflow:hidden;background:#F1F5F9;width:100%">'+segs+'</div>';
+  }
+
+  var legendHtml = totalCats.map(function(c){
+    return '<span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--ink2);margin-right:14px"><span style="width:9px;height:9px;border-radius:2px;background:'+c.color+';display:inline-block"></span>'+c.label+'</span>';
+  }).join('');
+
+  var stackDc = totalDelta>=0?"#059669":"#DC2626";
+  var stackBox=
+    '<div class="note" style="margin-bottom:12px">Total program NSF — all categories stacked (Academic + Faculty + Admin + Social + Support).</div>'+
+    '<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">'+
+      '<div style="width:140px;flex-shrink:0;font-size:12px;font-weight:700;color:var(--ink2)">Boston Workshop</div>'+
+      '<div style="flex:1">'+stackedBar('boston')+'</div>'+
+      '<div style="width:64px;flex-shrink:0;text-align:right;font-weight:800;font-size:15px;color:var(--ink)">'+fmtK(bostonTotal)+'</div>'+
+    '</div>'+
+    '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">'+
+      '<div style="width:140px;flex-shrink:0;font-size:12px;font-weight:700;color:var(--ink2)">Calculated Current</div>'+
+      '<div style="flex:1">'+stackedBar('calc')+'</div>'+
+      '<div style="width:64px;flex-shrink:0;text-align:right;font-weight:800;font-size:15px;color:var(--ink)">'+fmtK(calcTotal)+'</div>'+
+    '</div>'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">'+
+      '<div>'+legendHtml+'</div>'+
+      '<div style="font-size:13px;font-weight:800;color:'+stackDc+'">Total Delta: '+(totalDelta>=0?"+":"")+fmtK(totalDelta)+' sf ('+(totalDelta>=0?"+":"")+totalPct.toFixed(1)+'%)</div>'+
+    '</div>';
+  var stackBoxEl = $("#nsfTotalStackBox");
+  if(stackBoxEl) stackBoxEl.innerHTML = stackBox;
+}
+
+function renderNBME(){
+  var scenario = sc();
+  var accomPct  = inp("nbme_accom_pct")||0;
+  var examDays  = inp("nbme_exam_days")||2;
+  var stdPct    = (100 - accomPct) / 100;  // fraction NOT needing accommodation
+
+  function findMaxStu(keyword){
+    var s = scenario.semesters.find(function(x){
+      return x.name.toLowerCase().indexOf(keyword.toLowerCase())>=0;
+    });
+    return s ? Math.max(s.sep||0,s.jan||0,s.may||0) : 0;
+  }
+
+  var semDefs=[
+    {label:"Sem 5",           keyword:"sem 5", include:inp("nbme_sem5")},
+    {label:"Sem 6 (Capstone)",keyword:"sem 6", include:inp("nbme_sem6")},
+  ];
+
+  var totalStudents = 0;
+  var rows = semDefs.map(function(sd){
+    var maxStu = findMaxStu(sd.keyword);
+    if(!sd.include || maxStu===0){
+      return '<tr><td style="color:#94A3B8">'+sd.label+'</td>'+
+        '<td colspan="4" style="text-align:center;color:#CBD5E1;font-size:11px">excluded / no students</td></tr>';
+    }
+    totalStudents += maxStu;
+    var stdSeats  = Math.ceil(maxStu * stdPct / examDays);
+    var accomSeats= Math.ceil(maxStu * (accomPct/100) / examDays);
+    return '<tr>'+
+      '<td style="font-weight:700">'+sd.label+'</td>'+
+      '<td class="num">'+fmt(maxStu)+'</td>'+
+      '<td class="num">'+fmt(Math.ceil(maxStu * stdPct))+'</td>'+
+      '<td class="num">'+fmt(Math.ceil(maxStu * (accomPct/100)))+'</td>'+
+      '<td class="num" style="font-weight:800;font-size:15px;color:#5B21B6">'+fmt(stdSeats)+'</td>'+
+      '</tr>';
+  }).join('');
+
+  var totalStdSeats   = Math.ceil(totalStudents * stdPct / examDays);
+  var totalAccomSeats = Math.ceil(totalStudents * (accomPct/100) / examDays);
+  window._nbmeSeatsNeeded = totalStdSeats;
+
+  var out = '<table style="margin-bottom:16px"><thead><tr>'+
+    '<th style="text-align:left;min-width:160px">Semester</th>'+
+    '<th>Max Students</th>'+
+    '<th>Standard<br><small style="font-weight:400;text-transform:none">'+(100-accomPct)+'% of total</small></th>'+
+    '<th>Accommodation<br><small style="font-weight:400;text-transform:none">'+accomPct+'% of total</small></th>'+
+    '<th>Seats Needed<br><small style="font-weight:400;text-transform:none">standard ÷ '+fmt(examDays)+' days</small></th>'+
+    '</tr></thead><tbody>'+rows+'</tbody></table>';
+
+  if(totalStudents>0){
+    out += '<div style="display:flex;gap:14px;flex-wrap:wrap">'+
+      '<div style="background:#F5F3FF;border:1px solid #DDD6FE;border-radius:8px;padding:14px;min-width:180px">'+
+        '<div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#5B21B6;margin-bottom:4px">Standard Seats Needed</div>'+
+        '<div style="font-size:36px;font-weight:900;color:#4C1D95">'+fmt(totalStdSeats)+'</div>'+
+        '<div style="font-size:11px;color:#7C3AED;margin-top:2px">'+fmt(Math.ceil(totalStudents*stdPct))+' students ÷ '+fmt(examDays)+' days</div>'+
+      '</div>'+
+      '<div style="background:#FFF1F2;border:1px solid #FECDD3;border-radius:8px;padding:14px;min-width:180px">'+
+        '<div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#9F1239;margin-bottom:4px">Accommodation Seats</div>'+
+        '<div style="font-size:36px;font-weight:900;color:#9F1239">'+fmt(totalAccomSeats)+'</div>'+
+        '<div style="font-size:11px;color:#BE123C;margin-top:2px">'+fmt(Math.ceil(totalStudents*(accomPct/100)))+' students ÷ '+fmt(examDays)+' days</div>'+
+        '<div style="font-size:10px;color:#94A3B8;margin-top:2px">Separate room — not in standard count</div>'+
+      '</div>'+
+      '<div style="background:#F0F9FF;border:1px solid #BAE6FD;border-radius:8px;padding:14px;flex:1;min-width:240px">'+
+        '<div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#075985;margin-bottom:6px">How to read this</div>'+
+        '<div style="font-size:12px;color:#0369A1;line-height:1.8">'+
+          'Step 1 uses a randomised question bank — students can be scheduled across a <b>'+fmt(examDays)+'</b>-day window without information-sharing risk.<br>'+
+          'Seats needed = students not needing accommodation ÷ exam window days.<br>'+
+          'Accommodation students require a separate, dedicated room with extended time.'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  }
+  var box=$('#nbmeResultBox'); if(box) box.innerHTML=out;
+}
+
+function renderOSCE(){
+  var scenario = sc();
+  var stations   = inp("osce_stations")||10;
+  var sessPerDay = inp("osce_sessions_per_day")||2;
+  var examDays   = inp("osce_exam_days")||10;
+  var totalSess  = sessPerDay * examDays;
+
+  function findMaxStu(keyword){
+    var s = scenario.semesters.find(function(x){
+      return x.name.toLowerCase().indexOf(keyword.toLowerCase())>=0;
+    });
+    return s ? Math.max(s.sep||0,s.jan||0,s.may||0) : 0;
+  }
+
+  var semDefs=[
+    {label:"Sem 4",          maxStu:findMaxStu("sem 4"),         include:inp("osce_sem4")},
+    {label:"Sem 5",          maxStu:findMaxStu("sem 5"),         include:inp("osce_sem5")},
+    {label:"Sem 6 (Capstone)",maxStu:findMaxStu("sem 6"),        include:inp("osce_sem6")},
+  ];
+
+  var totalOSCERooms=0;
+  var semRooms=[];
+  var pctList=[];
+  var rowsHtml=semDefs.map(function(sd){
+    if(!sd.include||sd.maxStu===0){
+      semRooms.push(0);
+      pctList.push(null);
+      return '<tr><td style="color:#94A3B8">'+sd.label+'</td>'+
+        '<td colspan="6" style="text-align:center;color:#CBD5E1;font-size:11px">excluded / no students</td></tr>';
+    }
+    var circuits = Math.ceil(sd.maxStu/stations);
+    var parallel = Math.ceil(circuits/totalSess);
+    var rooms    = parallel*stations;
+    totalOSCERooms += rooms;
+    semRooms.push(rooms);
+    // Capacity of current room allocation, and how close current enrollment is to tipping into the next block of rooms
+    var capacityStudents = parallel*totalSess*stations;
+    var pctToNext = Math.min(100, (sd.maxStu/capacityStudents)*100);
+    pctList.push(pctToNext);
+    var pctColor = pctToNext>=90?"#B91C1C":(pctToNext>=70?"#B45309":"#0F766E");
+    var pctBg    = pctToNext>=90?"#FEE2E2":(pctToNext>=70?"#FEF3C7":"#F0FDFA");
+    return '<tr>'+
+      '<td style="font-weight:700">'+sd.label+'</td>'+
+      '<td class="num">'+fmt(sd.maxStu)+'</td>'+
+      '<td class="num">'+fmt(circuits)+'</td>'+
+      '<td class="num">'+fmt(totalSess)+'</td>'+
+      '<td class="num">'+fmt(parallel)+'</td>'+
+      '<td class="num">'+
+        '<div style="display:flex;align-items:center;gap:6px;justify-content:flex-end">'+
+          '<div style="width:44px;height:6px;background:'+pctBg+';border-radius:3px;overflow:hidden">'+
+            '<div style="height:100%;width:'+Math.round(pctToNext)+'%;background:'+pctColor+'"></div>'+
+          '</div>'+
+          '<span style="font-weight:700;color:'+pctColor+';font-size:11px;min-width:30px;text-align:right">'+pctToNext.toFixed(0)+'%</span>'+
+        '</div>'+
+      '</td>'+
+      '<td class="num" style="font-weight:800;font-size:15px;color:#134E4A">'+fmt(rooms)+'</td>'+
+      '</tr>';
+  }).join('');
+
+  var out='<table style="margin-bottom:16px"><thead><tr>'+
+    '<th style="text-align:left;min-width:160px">Semester</th>'+
+    '<th>Max Students</th>'+
+    '<th>Circuits Needed<br><small style="font-weight:400;text-transform:none">÷ '+fmt(stations)+' per circuit</small></th>'+
+    '<th>Total Sessions<br><small style="font-weight:400;text-transform:none">'+fmt(sessPerDay)+'/day × '+fmt(examDays)+' days</small></th>'+
+    '<th>Parallel Circuits<br><small style="font-weight:400;text-transform:none">ceil(circuits ÷ sessions)</small></th>'+
+    '<th>% to Next Circuit<br><small style="font-weight:400;text-transform:none">of current room block</small></th>'+
+    '<th>SP Rooms Needed<br><small style="font-weight:400;text-transform:none">circuits × '+fmt(stations)+' stations</small></th>'+
+    '</tr></thead><tbody>'+rowsHtml+'</tbody></table>';
+
+  if(totalOSCERooms>0){
+    var semBreakdown = semDefs.map(function(sd,i){
+      return semRooms[i]>0?sd.label+': '+fmt(semRooms[i]):'';
+    }).filter(Boolean).join(' + ');
+    // Identify the semester closest to tipping into its next room block
+    var closestIdx=-1, closestPct=-1;
+    pctList.forEach(function(p,i){ if(p!==null && p>closestPct){ closestPct=p; closestIdx=i; } });
+    var closestNote = closestIdx>=0 ? semDefs[closestIdx].label+' is closest to needing more rooms ('+closestPct.toFixed(0)+'% of its current '+fmt(semRooms[closestIdx])+'-room block used)' : '';
+    out+='<div style="display:flex;gap:14px;flex-wrap:wrap">'+
+      '<div style="background:#F0FDFA;border:1px solid #99F6E4;border-radius:8px;padding:14px;min-width:180px">'+
+        '<div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#134E4A;margin-bottom:4px">Total SP Rooms Needed</div>'+
+        '<div style="font-size:36px;font-weight:900;color:#134E4A">'+fmt(totalOSCERooms)+'</div>'+
+        '<div style="font-size:11px;color:#0F766E;margin-top:2px">sum across active OSCE semesters</div>'+
+        '<div style="font-size:10px;color:#94A3B8;margin-top:3px">'+semBreakdown+'</div>'+
+        (closestNote?'<div style="font-size:11px;color:#0F766E;font-weight:700;margin-top:8px;padding-top:8px;border-top:1px solid #99F6E4">'+closestNote+'</div>':'')+
+      '</div>'+
+      '<div style="background:#F5F3FF;border:1px solid #DDD6FE;border-radius:8px;padding:14px;flex:1;min-width:240px">'+
+        '<div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#5B21B6;margin-bottom:6px">How to read this</div>'+
+        '<div style="font-size:12px;color:#6D28D9;line-height:1.8">'+
+          'Each semester\'s rooms run concurrently — Sem 4, 5, and 6 OSCE rooms are all needed simultaneously.<br>'+
+          'Each circuit examines <b>'+fmt(stations)+'</b> students per session.<br>'+
+          '<b>'+fmt(sessPerDay)+'</b> sessions/day × <b>'+fmt(examDays)+'</b> days = <b>'+fmt(totalSess)+'</b> total sessions per circuit-set.<br>'+
+          'This total flows into the SP Exam Rooms panel as a constraint alongside the curricular need.'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  }
+  // Expose to global scope for SP room card
+  window._osceTotalRooms = totalOSCERooms;
+  var box=$("#osceResultBox"); if(box) box.innerHTML=out;
+}
+function toggleCard(header){
+  header.classList.toggle('open');
+  var toggle = header.querySelector('.card-toggle');
+  var body   = header.nextElementSibling;
+  if(body && body.classList.contains('card-body')){
+    body.classList.toggle('collapsed');
+    if(toggle) toggle.classList.toggle('closed');
+  }
+}
+
+
+function render(){
+  var scenario = sc();
+  var r = compute();
+  syncStaticAssumptionInputs();
+
+  // ── Scenario bar ──────────────────────────────
+  var bar=$("#scenBar"); bar.innerHTML="";
+  SCENARIOS.forEach(function(scen,i){
+    var wrap=document.createElement('div');
+    wrap.className='scen-tab-wrap'+(i===ACTIVE_SCENARIO?' active':'');
+    wrap.draggable=true;
+    wrap.dataset.idx=i;
+    // Drag events
+    wrap.addEventListener('dragstart',function(e){
+      e.dataTransfer.effectAllowed='move';
+      e.dataTransfer.setData('text/plain',i);
+      wrap.classList.add('dragging');
+    });
+    wrap.addEventListener('dragend',function(){
+      wrap.classList.remove('dragging');
+      document.querySelectorAll('.scen-tab-wrap').forEach(function(el){el.classList.remove('drag-over');});
+    });
+    wrap.addEventListener('dragover',function(e){
+      e.preventDefault(); e.dataTransfer.dropEffect='move';
+      wrap.classList.add('drag-over');
+    });
+    wrap.addEventListener('dragleave',function(){
+      wrap.classList.remove('drag-over');
+    });
+    wrap.addEventListener('drop',function(e){
+      e.preventDefault();
+      wrap.classList.remove('drag-over');
+      var fromIdx=parseInt(e.dataTransfer.getData('text/plain'));
+      var toIdx=parseInt(wrap.dataset.idx);
+      if(fromIdx===toIdx) return;
+      var moved=SCENARIOS.splice(fromIdx,1)[0];
+      SCENARIOS.splice(toIdx,0,moved);
+      // Keep active scenario tracking correct
+      if(ACTIVE_SCENARIO===fromIdx) ACTIVE_SCENARIO=toIdx;
+      else if(fromIdx<ACTIVE_SCENARIO && toIdx>=ACTIVE_SCENARIO) ACTIVE_SCENARIO--;
+      else if(fromIdx>ACTIVE_SCENARIO && toIdx<=ACTIVE_SCENARIO) ACTIVE_SCENARIO++;
+      render();
+    });
+    var grip=document.createElement('span');
+    grip.className='scen-tab-grip'; grip.textContent='⠿'; grip.title='Drag to reorder';
+    var b=document.createElement('button');
+    b.className='scen-tab-label'; b.textContent=scen.name;
+    b.onclick=(function(idx){return function(){switchScenario(idx);};})(i);
+    var x=document.createElement('button');
+    x.className='scen-tab-del'; x.textContent='×'; x.title='Delete scenario';
+    x.onclick=(function(idx){return function(e){e.stopPropagation();deleteScenario(idx);};})(i);
+    wrap.appendChild(grip); wrap.appendChild(b); wrap.appendChild(x);
+    bar.appendChild(wrap);
+  });
+  var ab=document.createElement("button");
+  ab.className="scen-add"; ab.textContent="+ Add Scenario"; ab.onclick=addScenario;
+  bar.appendChild(ab);
+  var db=document.createElement("button");
+  db.className="scen-add scen-dup"; db.textContent="⧉ Duplicate Active"; db.onclick=duplicateScenario;
+  bar.appendChild(db);
+  var nw=document.createElement("div");
+  nw.style.cssText="display:flex;align-items:center;gap:6px;margin-left:auto";
+  nw.innerHTML='<span style="font-size:11px;color:#94A3B8">Name:</span>';
+  var ni=document.createElement("input"); ni.className="scen-name-inp";
+  ni.value=scenario.name;
+  ni.onchange=function(){scenario.name=ni.value;
+    var tabs=bar.querySelectorAll(".scen-tab");
+    if(tabs[ACTIVE_SCENARIO]) tabs[ACTIVE_SCENARIO].textContent=ni.value;};
+  nw.appendChild(ni); bar.appendChild(nw);
+
+  // ── Assumptions ───────────────────────────────
+  var catBoxes = [
+    {key:"largeTBL",  color:"emerald",label:"Large TBL"},
+    {key:"medClass",  color:"orange", label:"Med Classroom"},
+    {key:"clinSkills",color:"teal",   label:"Clinical Skills"},
+    {key:"teachLab",  color:"rose",   label:"Teaching Lab"},
+    {key:"simSuite",  color:"amber",  label:"Sim Suite"},
+    {key:"smallPBL",  color:"sky",    label:"Small PBL"},
+  ];
+  var ag=$("#assumeGrid"); ag.innerHTML=
+    '<div class="assume-box violet">'+
+    '<div class="assume-label">Schedule &amp; Faculty</div>'+
+    assumeRow("academicWeeks","Academic weeks","13","number","1")+
+    assumeRow("facultyHrsPerWeek","Teaching hrs/wk/fac","12","number","0.5")+
+    assumeRow("facultyTeachingPct","% faculty teaching/sem","80","number","1")+
+    assumeRow("fac_on_staff_pct","% faculty on staff","70","number","1")+
+    '</div>'+
+    catBoxes.map(function(c){
+      return '<div class="assume-box '+c.color+'">'+
+        '<div class="assume-label">'+c.label+'</div>'+
+        assumeRow(c.key+"SessionHrs","Session hrs","1.0","number","0.25")+
+        assumeRow(c.key+"Faculty","Faculty/session","1","number","0.25")+
+        assumeRow("r_"+c.key+"_sess","Sessions/weekday","5","number","1")+
+        '</div>';
+    }).join('')+
+    '<div class="assume-box sky">'+
+    '<div class="assume-label">Indep Study</div>'+
+    assumeRow("indepSegmentHrs","Segment hrs","0.5","number","0.1")+
+    assumeRow("r_indep_sess","Sessions/weekday","20","number","1")+
+    '<div class="note">No faculty</div></div>';
+
+  // ── Students per Semester ─────────────────────
+  var sb=$("#stuBody"); sb.innerHTML="";
+  scenario.semesters.forEach(function(s){
+    var maxStu=Math.max(s.sep||0,s.jan||0,s.may||0);
+    var tr=document.createElement("tr");
+    tr.innerHTML=
+      '<td><input class="name-inp" type="text" value="'+esc(s.name)+'" onchange="updateSem('+s.id+',\'name\',this.value)"></td>'+
+      '<td><input type="number" value="'+(s.sep||0)+'" oninput="updateSem('+s.id+',\'sep\',this.value)" style="color:var(--sep-col);font-weight:700"></td>'+
+      '<td><input type="number" value="'+(s.jan||0)+'" oninput="updateSem('+s.id+',\'jan\',this.value)" style="color:var(--jan-col);font-weight:700"></td>'+
+      '<td><input type="number" value="'+(s.may||0)+'" oninput="updateSem('+s.id+',\'may\',this.value)" style="color:var(--may-col);font-weight:700"></td>'+
+      '<td class="num" style="font-weight:800;color:var(--ink)">'+maxStu+'</td>'+
+      '<td><button class="del-btn" onclick="removeSemester('+s.id+')">✕</button></td>';
+    sb.appendChild(tr);
+  });
+
+  // Total row
+  var totSep=0,totJan=0,totMay=0,totMax=0;
+  scenario.semesters.forEach(function(s){
+    totSep+=s.sep||0; totJan+=s.jan||0; totMay+=s.may||0;
+    totMax+=Math.max(s.sep||0,s.jan||0,s.may||0);
+  });
+  var totTr=document.createElement('tr');
+  totTr.style.cssText='border-top:2px solid var(--ink);font-weight:800;background:#F8FAFC';
+  totTr.innerHTML=
+    '<td style="font-weight:800;font-size:12px;color:var(--ink)">TOTAL</td>'+
+    '<td class="num" style="color:var(--sep-col);font-weight:800;padding-right:10px">'+totSep+'</td>'+
+    '<td class="num" style="color:var(--jan-col);font-weight:800;padding-right:10px">'+totJan+'</td>'+
+    '<td class="num" style="color:var(--may-col);font-weight:800;padding-right:10px">'+totMay+'</td>'+
+    '<td class="num" style="font-weight:900;color:var(--ink);padding-right:10px">'+totMax+'</td>'+
+    '<td></td>';
+  sb.appendChild(totTr);
+
+  // ── Curriculum Breakdown ──────────────────────
+  var ca=$("#curriculumArea"); ca.innerHTML="";
+  if(isMobileView()){
+    ca.innerHTML = (INPUT_MODE==="simple")
+      ? renderCurriculumBreakdownCardsSimple(scenario)
+      : renderCurriculumBreakdownCardsDetailed(scenario);
   } else {
-    document.getElementById("loginErr").textContent="Invalid credentials. Please try again.";
-    document.getElementById("loginPass").value="";
-  }
+  var tHtml='<table><thead><tr><th style="min-width:140px">Stage</th>';
+  if(INPUT_MODE==="simple"){
+    tHtml+='<th class="col-large" style="text-align:center">TBL %</th>'+
+      '<th class="col-medium" style="text-align:center">Medium %<br><small style="font-weight:400;text-transform:none">(derived)</small></th>'+
+      '<th class="col-small" style="text-align:center">Small %<br><small style="font-weight:400;text-transform:none">(derived)</small></th>'+
+      '<th class="col-indep" style="text-align:center">Study %</th><th>Sum</th></tr></thead><tbody>';
+    scenario.semesters.forEach(function(s){
+      var d=derivedCols(s); var sum=d.large+d.medium+d.small+d.indep;
+      tHtml+='<tr>'+
+        '<td style="color:#94A3B8;font-size:11px">'+esc(s.name)+'</td>'+
+        '<td><input type="number" value="'+s.largeTBL+'" oninput="updateSem('+s.id+',\'largeTBL\',this.value)"></td>'+
+        '<td class="num col-derived">'+d.medium+'</td>'+
+        '<td class="num col-derived">'+d.small+'</td>'+
+        '<td><input type="number" value="'+s.indep+'" oninput="updateSem('+s.id+',\'indep\',this.value)"></td>'+
+        '<td class="'+(sum===100?"pct-ok":"pct-bad")+' num">'+sum+'%</td></tr>';
+    });
+  } else {
+    tHtml+='<th class="col-large" style="text-align:center">TBL</th>'+
+      '<th class="col-medium" style="text-align:center">Med.</th><th class="col-medium" style="text-align:center">Skills</th><th class="col-medium" style="text-align:center">Labs</th>'+
+      '<th class="col-small" style="text-align:center">SIM</th><th class="col-small" style="text-align:center">PBL</th>'+
+      '<th class="col-indep" style="text-align:center">Study</th><th>Sum</th></tr>'+
+      '<tr><th></th>'+
+      '<th class="col-large" style="font-size:8px;font-weight:400;text-align:center">→ Large</th>'+
+      '<th class="col-medium" colspan="3" style="font-size:8px;font-weight:400;text-align:center">——— Medium ———</th>'+
+      '<th class="col-small" colspan="3" style="font-size:8px;font-weight:400;text-align:center">——— Small ———</th>'+
+      '<th class="col-indep" style="font-size:8px;font-weight:400;text-align:center">→ Study</th>'+
+      '<th></th></tr></thead><tbody>';
+    var fields=["largeTBL","medClass","clinSkills","teachLab","simSuite","smallPBL","indep"];
+    scenario.semesters.forEach(function(s){
+      var sum=fields.reduce(function(a,f){return a+(s[f]||0);},0);
+      tHtml+='<tr><td style="color:#94A3B8;font-size:11px">'+esc(s.name)+'</td>';
+      fields.forEach(function(f){
+        var hrsVal=fmtHrs((s[f]||0)/100*40);
+        tHtml+='<td><input type="number" step="1" value="'+hrsVal+'" oninput="updateSem('+s.id+',\''+f+'\',Math.round(parseFloat(this.value||0)*2.5*100)/100)" style="width:42px;text-align:center"></td>';
+      });
+      var totalHrs=+(sum/100*40).toFixed(1);
+      tHtml+='<td class="'+(sum===100?'pct-ok':'pct-bad')+' num" title="'+sum+'%">'+totalHrs+'h</td></tr>';
+    });
+  } // close if/else INPUT_MODE block
+  tHtml+='</tbody></table>';
+  ca.innerHTML=tHtml;
+  } // close mobile/desktop branch
+  $("#btnSimple").className="toggle-btn"+(INPUT_MODE==="simple"?" on":"");
+  $("#btnDetailed").className="toggle-btn"+(INPUT_MODE==="detailed"?" on":"");
+
+  // ── Week label ────────────────────────────────
+  var wl=$("#weeksLabel"); if(wl) wl.textContent=r.weeks;
+
+  // ── Faculty ───────────────────────────────────
+  var catKeys=["largeTBL","medClass","clinSkills","teachLab","simSuite","smallPBL"];
+  var catLabels={largeTBL:"Large TBL",medClass:"Med Classroom",clinSkills:"Clinical Skills",
+    teachLab:"Teaching Lab",simSuite:"Sim Suite",smallPBL:"Small PBL"};
+  var catCols={largeTBL:"col-large",medClass:"col-medium",clinSkills:"col-medium",teachLab:"col-medium",
+    simSuite:"col-small",smallPBL:"col-small"};
+
+  // Faculty Hours panel (list + total)
+  var fHoursHtml=catKeys.map(function(c){
+    return resultRow(catLabels[c]+" fac-hrs",fmt(r.facHrs[c]),"hrs/wk",catCols[c]);
+  }).join("")+'<div class="divider"></div>'+
+  resultRow("Total faculty-hours",fmt(r.totalFacHrs),"hrs/wk","",true);
+  var fhBox=$("#facultyHoursBox"); if(fhBox) fhBox.innerHTML=fHoursHtml;
+
+  // Faculty FTE panel (standalone in Quantity Modeling)
+  var onStaffPct  = inp('fac_on_staff_pct') || 70;
+  var visitingPct = 100 - onStaffPct;
+  var onStaffFTE  = Math.round(r.staffNeeded * onStaffPct / 100);
+  var visitingFTE = Math.round(r.staffNeeded * visitingPct / 100);
+  window._onStaffFTE  = onStaffFTE;
+  window._visitingFTE = visitingFTE;
+  window._totalStaff  = Math.round(r.staffNeeded);
+  var fFTEHtml='<div class="fte-box" style="margin-top:0">'+
+    '<div class="fte-label">Faculty FTE (teaching demand)</div>'+
+    '<div class="fte-value">'+Math.round(r.facultyFTE)+'</div>'+
+    '<div class="fte-sub">at '+r.facHrsPerWeek+' hrs/week/faculty · based on '+fmt(r.totalFacHrs)+' faculty-hrs/wk</div>'+
+    '<div class="fte-staff">'+
+      '<div class="fte-label">Total Staff Needed</div>'+
+      '<div class="fte-staff-value">'+Math.round(r.staffNeeded)+'</div>'+
+      '<div class="fte-sub">FTE ÷ '+(r.teachPct*100).toFixed(0)+'% teaching = '+Math.round(r.staffNeeded)+' total staff</div>'+
+      '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line)">'+
+        '<div class="fte-label">Student : Faculty Ratio</div>'+
+        '<div style="font-size:22px;font-weight:900;color:var(--ink);margin:4px 0">'+
+          (function(){ var sep=sc().semesters.reduce(function(a,s){return a+(s.sep||0);},0); var jan=sc().semesters.reduce(function(a,s){return a+(s.jan||0);},0); var may=sc().semesters.reduce(function(a,s){return a+(s.may||0);},0); var stu=Math.max(sep,jan,may); var staff=Math.round(r.staffNeeded)||1; return Math.round(stu/staff)+' : 1'; }())+
+        '</div>'+
+        '<div style="font-size:11px;color:var(--ink2)">'+
+          (function(){ var sep=sc().semesters.reduce(function(a,s){return a+(s.sep||0);},0); var jan=sc().semesters.reduce(function(a,s){return a+(s.jan||0);},0); var may=sc().semesters.reduce(function(a,s){return a+(s.may||0);},0); return Math.max(sep,jan,may)+' students ÷ '+Math.round(r.staffNeeded)+' staff'; }())+
+        '</div>'+
+      '</div>'+
+      '<div style="display:flex;gap:24px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)">'+
+        '<div>'+
+          '<div class="fte-label">On Staff ('+onStaffPct+'%)</div>'+
+          '<div style="font-size:26px;font-weight:900;color:var(--ink)">'+onStaffFTE+'</div>'+
+        '</div>'+
+        '<div>'+
+          '<div class="fte-label">Visiting / Adjunct ('+visitingPct+'%)</div>'+
+          '<div style="font-size:26px;font-weight:900;color:var(--ink)">'+visitingFTE+'</div>'+
+        '</div>'+
+      '</div>'+
+    '</div></div>';
+  // Faculty NSF calc
+  var facOnStaffSF  = inp('fac_onstaff_sf')  || 160;
+  var facVisitingSF = inp('fac_visiting_sf') || 60;
+  var facNSF = onStaffFTE * facOnStaffSF + visitingFTE * facVisitingSF;
+  fFTEHtml += '<div style="margin-top:14px;background:#F8FAFC;border:1px solid var(--line);border-radius:6px;padding:12px">'+
+    '<div class="fte-label" style="margin-bottom:8px">Faculty NSF</div>'+
+    '<div style="font-size:26px;font-weight:900;color:var(--ink)">'+Math.round(facNSF/1000)+'K sf</div>'+
+    '<div style="font-size:11px;color:var(--ink2);margin-top:2px">'+onStaffFTE+' on-staff × '+facOnStaffSF+' sf + '+visitingFTE+' visiting × '+facVisitingSF+' sf = '+facNSF.toLocaleString()+' sf</div>'+
+    '<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--line)">'+
+      '<div style="font-size:10px;font-weight:800;text-transform:uppercase;color:var(--ink2);margin-bottom:6px">Breakdown</div>'+
+      '<div style="font-size:11px;color:var(--ink2);margin-bottom:3px">On staff: '+onStaffFTE+' ×</span>'+'<input type="number" step="1" value="'+facOnStaffSF+'" oninput="setInp(\'fac_onstaff_sf\',this.value)" style="width:46px;font-size:11px;padding:2px 4px;border:1px solid var(--line2);border-radius:4px">'+'<span> sf = '+(onStaffFTE*facOnStaffSF).toLocaleString()+' sf</span></div>'+
+      '<div style="font-size:11px;color:var(--ink2)">Visiting / Adjunct: '+visitingFTE+' ×</span>'+'<input type="number" step="1" value="'+facVisitingSF+'" oninput="setInp(\'fac_visiting_sf\',this.value)" style="width:46px;font-size:11px;padding:2px 4px;border:1px solid var(--line2);border-radius:4px">'+'<span> sf = '+(visitingFTE*facVisitingSF).toLocaleString()+' sf</span></div>'+
+    '</div>'+
+  '</div>';
+  var fFTEBox=$("#facultyFTEBox"); if(fFTEBox) fFTEBox.innerHTML=fFTEHtml;
+
+  // ── Semester + weekly totals ──────────────────
+  var allCats=["largeTBL","medClass","clinSkills","teachLab","simSuite","smallPBL","indep"];
+  var allColors={largeTBL:"emerald",medClass:"orange",clinSkills:"teal",teachLab:"rose",
+    simSuite:"amber",smallPBL:"sky",indep:"sky"};
+  var semHtml=allCats.map(function(c){
+    return bigStat((catLabels[c]||"Indep")+" seat-hrs",fmt(r.peakHours[c]*r.weeks),allColors[c]);
+  }).join("");
+  var stBox=$("#semesterTotalsBox"); stBox.style.gridTemplateColumns="repeat(4,1fr)"; stBox.innerHTML=semHtml;
+  var wkHtml=allCats.map(function(c){
+    return bigStat((catLabels[c]||"Indep")+" seat-hrs/wk",fmt(r.peakHours[c]),allColors[c]);
+  }).join("");
+  var wtBox=$("#weeklyTotalsBox"); wtBox.style.gridTemplateColumns="repeat(4,1fr)"; wtBox.innerHTML=wkHtml;
+
+  // ── Sections ─────────────────────────────────
+  var sHtml=allCats.filter(function(c){return c!=="indep";}).map(function(c){
+    var cap    = inp("r_"+c+"_cap")||1;
+    var fill   = (inp("r_"+c+"_fill")||100)/100;
+    var effCap = cap * fill;
+    return resultRow(catLabels[c]+" sections",fmt(Math.ceil(r.peakTotals[c]/effCap)),
+      "at "+cap+" × "+Math.round(fill*100)+"% = "+effCap.toFixed(0)+" eff. seats/room",catCols[c]||"",true);
+  }).join("");
+  $("#sectionsNeededBox").innerHTML=sHtml;
+
+  // ── Room model ────────────────────────────────
+  // Override examCenter room count with NBME-driven demand
+  (function(){
+    var days=inp('nbme_exam_days')||2;
+    var accomPct=inp('nbme_accom_pct')||0;
+    var stdPct=(100-accomPct)/100;
+    var total=0;
+    [['sem 5','nbme_sem5'],['sem 6','nbme_sem6']].forEach(function(pair){
+      if(!inp(pair[1])) return;
+      var s=scenario.semesters.find(function(x){return x.name.toLowerCase().indexOf(pair[0])>=0;});
+      if(s) total+=Math.max(s.sep||0,s.jan||0,s.may||0);
+    });
+    var seatsNeeded=Math.ceil(total*stdPct/days);
+    var cap=inp('r_examCenter_cap')||45;
+    var fill=(inp('r_examCenter_fill')||95)/100;
+    var roomsNeeded=seatsNeeded>0?Math.ceil(seatsNeeded/(cap*fill)):0;
+    if(r.roomRes.examCenter) r.roomRes.examCenter.rooms=roomsNeeded;
+    if(r.vacRes.examCenter){
+      var totalCap=roomsNeeded*cap*fill;
+      ['sep','jan','may'].forEach(function(co){
+        var coTotal=0;
+        [['sem 5','nbme_sem5'],['sem 6','nbme_sem6']].forEach(function(pair){
+          if(!inp(pair[1])) return;
+          var s=scenario.semesters.find(function(x){return x.name.toLowerCase().indexOf(pair[0])>=0;});
+          if(s) coTotal+=(s[co]||0)*stdPct/days;
+        });
+        var pctExact=totalCap>0?Math.min(coTotal/totalCap*100,100):0;
+        r.vacRes.examCenter[co]={pct:Math.min(pctExact,100),pctExact:pctExact};
+      });
+    }
+  }());
+
+  var rmHtml='<div class="room-grid">';
+  var largeCurrNSF=0,mediumNSFBase=0,mediumSemNSF=0,mediumCurrNSF=0,smallNSFBase=0,smallSimK=0,smallCurrNSF=0;
+  var roomResults={};
+
+  CAT_DEFS.forEach(function(cd){
+    var rr=r.roomRes[cd.key];
+    // For SP Exam: compute OSCE total inline
+    var osceRooms = 0;
+    if(cd.key==="spExam"){
+      var _stations=inp("osce_stations")||10;
+      var _sessPerDay=inp("osce_sessions_per_day")||2;
+      var _examDays=inp("osce_exam_days")||10;
+      var _totalSess=_sessPerDay*_examDays;
+      var _semDefs=[
+        {maxStu:Math.max.apply(null,scenario.semesters.filter(function(x){return x.name.toLowerCase().indexOf("sem 4")>=0;}).map(function(x){return Math.max(x.sep||0,x.jan||0,x.may||0);})||[0]),include:inp("osce_sem4")},
+        {maxStu:Math.max.apply(null,scenario.semesters.filter(function(x){return x.name.toLowerCase().indexOf("sem 5")>=0;}).map(function(x){return Math.max(x.sep||0,x.jan||0,x.may||0);})||[0]),include:inp("osce_sem5")},
+        {maxStu:Math.max.apply(null,scenario.semesters.filter(function(x){return x.name.toLowerCase().indexOf("sem 6")>=0;}).map(function(x){return Math.max(x.sep||0,x.jan||0,x.may||0);})||[0]),include:inp("osce_sem6")},
+      ];
+      _semDefs.forEach(function(sd){
+        if(sd.include&&sd.maxStu>0){
+          osceRooms+=Math.ceil(Math.ceil(sd.maxStu/_stations)/_totalSess)*_stations;
+        }
+      });
+    }
+    var currRooms = rr.rooms;
+    if(cd.key==="spExam" && osceRooms>currRooms){
+      rr = {rooms:osceRooms, raw:osceRooms};
+    }
+    var sfPerSeat = inp("r_"+cd.key+"_sf") || cd.sfPerSeat;  // editable sf/seat, falls back to CAT_DEFS default
+    var nsfBase=rr.rooms*inp("r_"+cd.key+"_cap")*sfPerSeat;
+    var semCount=cd.seminar?rr.rooms:0;
+    var simKNSF=cd.simK?Math.round(nsfBase*(SIM_KICKER-1)):0;
+    var labKNSF=cd.labK?Math.round(nsfBase*(LAB_KICKER-1)):0;
+    var spKNSF =cd.spK ?Math.round(nsfBase*SP_KICKER):0;
+    var debriefNSF = cd.key==="simSuite" ? rr.rooms*DEBRIEF_NSF_PER_ROOM : 0;
+    var totalNSF=Math.round(nsfBase*cd.kicker)+(semCount*SEMINAR_NSF)+simKNSF+spKNSF+debriefNSF;
+    var storageKickerNSF=cd.kicker===STORAGE_KICKER?Math.round(nsfBase*(STORAGE_KICKER-1)):0;
+    roomResults[cd.key]={rooms:rr.rooms, nsf:totalNSF, nsfBase:nsfBase, semCount:semCount, simKNSF:simKNSF, spKNSF:spKNSF, debriefNSF:debriefNSF};
+    if(cd.parent==="large") largeCurrNSF+=totalNSF;
+    if(cd.parent==="medium"){mediumCurrNSF+=totalNSF; if(cd.seminar){mediumNSFBase+=Math.round(nsfBase*cd.kicker);mediumSemNSF+=semCount*SEMINAR_NSF;}}
+    if(cd.parent==="small"){smallNSFBase+=nsfBase;smallSimK+=simKNSF;smallCurrNSF+=totalNSF;}
+
+    // Vacancy block
+    var vac=r.vacRes[cd.key];
+    var troughCo=vac.troughCohort;
+    var vacBlock='<div class="vacancy-block">'+
+      '<div class="vacancy-label">Utilization by Cohort ('+rr.rooms+' room'+( rr.rooms===1?'':'s')+' total)</div>'+
+      COHORTS.map(function(co){
+        var v=vac[co];
+        var barColor=COHORT_COLORS[co];
+        var pctLabel=v.pctExact.toFixed(1)+'%';
+        var utilizColor=v.pctExact>=90?'#059669':v.pctExact>=70?'#D97706':'#DC2626';
+        return '<div class="vacancy-row">'+
+          '<span class="vacancy-cohort '+co+'">'+COHORT_LABELS[co]+'</span>'+
+          '<div class="vacancy-bar-wrap"><div class="vacancy-bar-fill" style="width:'+v.pct+'%;background:'+barColor+'"></div></div>'+
+          '<span class="vacancy-rooms" style="color:'+utilizColor+';font-weight:700">'+pctLabel+'</span>'+
+          '</div>';
+      }).join('')+
+    '</div>';
+
+    var prevData=cd.prev;
+    var prevNSF=prevData.nsf;
+    var currSeats=rr.rooms*inp("r_"+cd.key+"_cap");
+    var seatBadge=pctBadge(currSeats,prevData.total);
+    var nsfBadge=pctBadge(totalNSF,prevNSF);
+
+    rmHtml+=
+      '<div class="room-card '+cd.color+'">'+
+      '<div class="room-card-title">'+cd.title+'</div>'+
+      '<div class="room-inp-row"><span>Capacity (seats)</span><input type="number" value="'+inp("r_"+cd.key+"_cap")+'" oninput="setInp(\'r_'+cd.key+'_cap\',this.value)"></div>'+
+      '<div class="room-inp-row"><span>Max fill rate (%)</span><input type="number" value="'+inp("r_"+cd.key+"_fill")+'" oninput="setInp(\'r_'+cd.key+'_fill\',this.value)"></div>'+
+      '<div class="room-inp-row"><span>sf / seat</span><input type="number" step="1" value="'+(inp("r_"+cd.key+"_sf")||cd.sfPerSeat)+'" oninput="setInp(\'r_'+cd.key+'_sf\',this.value)"></div>'+
+      '<div class="room-demand">Peak weekly demand: '+fmt(r.peakTotals[cd.key])+' seat-sessions/wk</div>'+
+      '<div class="room-curr-prev">'+
+        '<div class="room-curr-label">Current</div>'+
+        '<div class="room-curr-value rvc">'+fmt(rr.rooms)+'</div>'+
+        '<div class="room-curr-seats">rooms · Seats: '+fmt(currSeats)+seatBadge+'</div>'+
+      
+      
+        '<div class="room-curr-nsf">NSF: '+fmtNSF(totalNSF)+nsfBadge+'</div>'+
+        (cd.key==="spExam"&&osceRooms>0?'<div class="room-curr-nsf" style="color:#134E4A">'+
+          (osceRooms>=currRooms?'OSCE need ('+fmt(osceRooms)+') > Curricular ('+fmt(currRooms)+') — OSCE drives count':'Curricular need ('+fmt(currRooms)+') > OSCE ('+fmt(osceRooms)+') — curriculum drives count')+
+        '</div>':'')+
+        (semCount?'<div class="room-curr-nsf" style="color:#7C3AED">incl. '+semCount+' seminar rooms (24p/600sf) = '+fmtNSF(semCount*SEMINAR_NSF)+' NSF</div>':'')+
+        (storageKickerNSF?'<div class="room-curr-nsf" style="color:#0369A1">incl. +10% AV/storage = '+fmtNSF(storageKickerNSF)+' NSF</div>':'')+
+        (simKNSF?'<div class="room-curr-nsf" style="color:#9A3412">+75% sim-adjacent = '+fmtNSF(simKNSF)+' NSF</div>':'')+
+        (debriefNSF?'<div class="room-curr-nsf" style="color:#9A3412">+ debrief rooms ('+fmt(rr.rooms)+' × 300sf, 1:1) = '+fmtNSF(debriefNSF)+' NSF</div>':'')+
+        (cd.labK?'<div class="room-curr-nsf" style="color:#7C3AED">+30% lab storage = '+fmtNSF(labKNSF)+' NSF</div>':'')+
+        (cd.spK?'<div class="room-curr-nsf" style="color:#3730A3">+100% suite corridors &amp; adjacent spaces = '+fmtNSF(spKNSF)+' NSF</div>':'')+
+        '<div class="room-prev-row">'+
+          '<div class="room-prev-label">Previous (v5.8)</div>'+
+          '<div class="room-prev-value">'+fmt(prevData.rooms)+'</div>'+
+          '<div class="room-prev-seats">Seats: '+fmt(prevData.total)+'</div>'+
+          '<div class="room-prev-nsf">NSF: '+fmtNSF(prevNSF)+'</div>'+
+        '</div>'+
+      '</div>'+
+      vacBlock+
+      '</div>';
+  });
+
+  // Exam Center card (replaces Indep Study)
+  var examRR=r.roomRes.examCenter;
+  var examVac=r.vacRes.examCenter;
+  var examNsfBase = examRR.rooms * inp("r_examCenter_cap") * (inp("r_examCenter_sf")||30);
+  var examNsfBadge = pctBadge(examNsfBase, 0);
+  var examSeatBadge = pctBadge(examRR.rooms * inp("r_examCenter_cap"), 0);
+  rmHtml+=
+    '<div class="room-card violet">'+
+    '<div class="room-card-title">Exam Center (Step 1)</div>'+
+    '<div class="room-inp-row"><span>Capacity (seats)</span><input type="number" value="'+inp("r_examCenter_cap")+'" oninput="setInp(\'r_examCenter_cap\',this.value)"></div>'+
+    '<div class="room-inp-row"><span>Max fill rate (%)</span><input type="number" value="'+inp("r_examCenter_fill")+'" oninput="setInp(\'r_examCenter_fill\',this.value)"></div>'+
+    '<div class="room-inp-row"><span>sf / seat</span><input type="number" step="1" value="'+(inp("r_examCenter_sf")||30)+'" oninput="setInp(\'r_examCenter_sf\',this.value)"></div>'+
+        '<div class="room-demand">NBME seats needed: '+(function(){
+      var days=inp("nbme_exam_days")||2;
+      var accomPct=inp("nbme_accom_pct")||0;
+      var stdPct=(100-accomPct)/100;
+      var total=0;
+      ['sem 5','sem 6'].forEach(function(kw,i){
+        var key=i===0?'nbme_sem5':'nbme_sem6';
+        if(!inp(key)) return;
+        var s=scenario.semesters.find(function(x){return x.name.toLowerCase().indexOf(kw)>=0;});
+        if(s) total+=Math.max(s.sep||0,s.jan||0,s.may||0);
+      });
+      return fmt(Math.ceil(total*stdPct/days));
+    }())+'</div>'+
+    '<div class="room-curr-prev">'+
+      '<div class="room-curr-label">Current</div>'+
+      '<div class="room-curr-value rvc">'+fmt(examRR.rooms)+'</div>'+
+      '<div class="room-curr-seats">rooms · Seats: '+fmt(examRR.rooms*inp("r_examCenter_cap"))+'</div>'+
+      '<div class="room-curr-nsf">NSF: '+fmtNSF(examNsfBase)+'</div>'+
+    '</div>'+
+    '<div class="vacancy-block">'+
+      '<div class="vacancy-label">Utilization by Cohort ('+examRR.rooms+' rooms total)</div>'+
+      COHORTS.map(function(co){
+        var v=examVac[co];
+        var utilizColor=v.pctExact>=90?'#059669':v.pctExact>=70?'#D97706':'#DC2626';
+        return '<div class="vacancy-row">'+
+          '<span class="vacancy-cohort '+co+'">'+COHORT_LABELS[co]+'</span>'+
+          '<div class="vacancy-bar-wrap"><div class="vacancy-bar-fill" style="width:'+v.pct+'%;background:'+COHORT_COLORS[co]+'"></div></div>'+
+          '<span class="vacancy-rooms" style="color:'+utilizColor+';font-weight:700">'+v.pctExact.toFixed(1)+'%</span>'+
+          '</div>';
+      }).join('')+
+    '</div>'+
+    '</div>';
+  rmHtml+='</div>';
+  $("#roomModelBox").innerHTML=rmHtml;
+
+  // ── NSF comparison ────────────────────────────
+  // NSF total = sum of ALL 7 room type NSFs (no fixed baseline)
+  var calcV68=0; CAT_DEFS.forEach(function(cd){ calcV68 += roomResults[cd.key]?roomResults[cd.key].nsf:0; });
+  // Add Exam Center NSF (not in CAT_DEFS — NBME-driven)
+  var examCenterRooms = r.roomRes.examCenter?r.roomRes.examCenter.rooms:0;
+  var examCenterNSF   = examCenterRooms * (inp('r_examCenter_cap')||45) * (inp('r_examCenter_sf')||30);
+  calcV68 += examCenterNSF;
+  window._academicNSFCalc = calcV68;
+  var nsfDelta=calcV68-NSF_V58;
+  var nsfPct=nsfDelta/NSF_V58*100;
+  var ds=nsfDelta>=0?"+":"";
+  var dc=nsfDelta>=0?"delta":"delta negative";
+  var nsfBreakdown=CAT_DEFS.map(function(cd){
+    return cd.title+": "+(roomResults[cd.key]?fmtNSF(roomResults[cd.key].nsf):"—");
+  }).join(" · ")+(examCenterNSF>0?' · Exam Center: '+fmtNSF(examCenterNSF):'');
+  var bostonBars='<div style="margin-top:8px;min-height:128px">'+'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">'+ '<div style="font-size:9px;color:#64748B;width:90px;flex-shrink:0;text-align:right">Large TBL</div>'+ '<div style="flex:1;height:8px;background:#F1F5F9;border-radius:4px;overflow:hidden">'+ '<div style="height:100%;background:#CAEADF;border:1px solid rgba(0,0,0,.08);width:'+Math.min(100,Math.round(40000/60000*100))+'%"></div>'+ '</div>'+ '<div style="font-size:9px;font-weight:700;color:#475569;width:32px;text-align:right">'+fmtNSF(40000)+'</div>'+ '</div>'+'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">'+ '<div style="font-size:9px;color:#64748B;width:90px;flex-shrink:0;text-align:right">Med Class</div>'+ '<div style="flex:1;height:8px;background:#F1F5F9;border-radius:4px;overflow:hidden">'+ '<div style="height:100%;background:#FFE885;border:1px solid rgba(0,0,0,.08);width:'+Math.min(100,Math.round(17000/60000*100))+'%"></div>'+ '</div>'+ '<div style="font-size:9px;font-weight:700;color:#475569;width:32px;text-align:right">'+fmtNSF(17000)+'</div>'+ '</div>'+'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">'+ '<div style="font-size:9px;color:#64748B;width:90px;flex-shrink:0;text-align:right">Clin Skills</div>'+ '<div style="flex:1;height:8px;background:#F1F5F9;border-radius:4px;overflow:hidden">'+ '<div style="height:100%;background:#9EDDD1;border:1px solid rgba(0,0,0,.08);width:'+Math.min(100,Math.round(10000/60000*100))+'%"></div>'+ '</div>'+ '<div style="font-size:9px;font-weight:700;color:#475569;width:32px;text-align:right">'+fmtNSF(10000)+'</div>'+ '</div>'+'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">'+ '<div style="font-size:9px;color:#64748B;width:90px;flex-shrink:0;text-align:right">Teach Lab</div>'+ '<div style="flex:1;height:8px;background:#F1F5F9;border-radius:4px;overflow:hidden">'+ '<div style="height:100%;background:#FECDD3;border:1px solid rgba(0,0,0,.08);width:'+Math.min(100,Math.round(14000/60000*100))+'%"></div>'+ '</div>'+ '<div style="font-size:9px;font-weight:700;color:#475569;width:32px;text-align:right">'+fmtNSF(14000)+'</div>'+ '</div>'+'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">'+ '<div style="font-size:9px;color:#64748B;width:90px;flex-shrink:0;text-align:right">Sim Suite</div>'+ '<div style="flex:1;height:8px;background:#F1F5F9;border-radius:4px;overflow:hidden">'+ '<div style="height:100%;background:#FDE68A;border:1px solid rgba(0,0,0,.08);width:'+Math.min(100,Math.round(10000/60000*100))+'%"></div>'+ '</div>'+ '<div style="font-size:9px;font-weight:700;color:#475569;width:32px;text-align:right">'+fmtNSF(10000)+'</div>'+ '</div>'+'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">'+ '<div style="font-size:9px;color:#64748B;width:90px;flex-shrink:0;text-align:right">Small PBL</div>'+ '<div style="flex:1;height:8px;background:#F1F5F9;border-radius:4px;overflow:hidden">'+ '<div style="height:100%;background:#BAE6FD;border:1px solid rgba(0,0,0,.08);width:'+Math.min(100,Math.round(15000/60000*100))+'%"></div>'+ '</div>'+ '<div style="font-size:9px;font-weight:700;color:#475569;width:32px;text-align:right">'+fmtNSF(15000)+'</div>'+ '</div>'+'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">'+ '<div style="font-size:9px;color:#64748B;width:90px;flex-shrink:0;text-align:right">OSCE SP</div>'+ '<div style="flex:1;height:8px;background:#F1F5F9;border-radius:4px;overflow:hidden">'+ '<div style="height:100%;background:#C7D2FE;border:1px solid rgba(0,0,0,.08);width:'+Math.min(100,Math.round(10000/60000*100))+'%"></div>'+ '</div>'+ '<div style="font-size:9px;font-weight:700;color:#475569;width:32px;text-align:right">'+fmtNSF(10000)+'</div>'+ '</div>'+'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">'+ '<div style="font-size:9px;color:#64748B;width:90px;flex-shrink:0;text-align:right">Exam Center</div>'+ '<div style="flex:1;height:8px;background:#F1F5F9;border-radius:4px;overflow:hidden">'+ '<div style="height:100%;background:#DDD6FE;border:1px solid rgba(0,0,0,.08);width:'+Math.min(100,Math.round(6000/60000*100))+'%"></div>'+ '</div>'+ '<div style="font-size:9px;font-weight:700;color:#475569;width:32px;text-align:right">'+fmtNSF(6000)+'</div>'+ '</div>'+'</div>';
+  var currentBars='<div style="margin-top:8px;min-height:128px">'+'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">'+ '<div style="font-size:9px;color:#64748B;width:90px;flex-shrink:0;text-align:right">Large TBL</div>'+ '<div style="flex:1;height:8px;background:#F1F5F9;border-radius:4px;overflow:hidden">'+ '<div style="height:100%;background:#CAEADF;border:1px solid rgba(0,0,0,.08);width:'+Math.min(100,Math.round((roomResults['largeTBL']?roomResults['largeTBL'].nsf:0)/60000*100))+'%"></div>'+ '</div>'+ '<div style="font-size:9px;font-weight:700;color:#475569;width:32px;text-align:right">'+fmtNSF((roomResults['largeTBL']?roomResults['largeTBL'].nsf:0))+'</div>'+ '</div>'+'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">'+ '<div style="font-size:9px;color:#64748B;width:90px;flex-shrink:0;text-align:right">Med Class</div>'+ '<div style="flex:1;height:8px;background:#F1F5F9;border-radius:4px;overflow:hidden">'+ '<div style="height:100%;background:#FFE885;border:1px solid rgba(0,0,0,.08);width:'+Math.min(100,Math.round((roomResults['medClass']?roomResults['medClass'].nsf:0)/60000*100))+'%"></div>'+ '</div>'+ '<div style="font-size:9px;font-weight:700;color:#475569;width:32px;text-align:right">'+fmtNSF((roomResults['medClass']?roomResults['medClass'].nsf:0))+'</div>'+ '</div>'+'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">'+ '<div style="font-size:9px;color:#64748B;width:90px;flex-shrink:0;text-align:right">Clin Skills</div>'+ '<div style="flex:1;height:8px;background:#F1F5F9;border-radius:4px;overflow:hidden">'+ '<div style="height:100%;background:#9EDDD1;border:1px solid rgba(0,0,0,.08);width:'+Math.min(100,Math.round((roomResults['clinSkills']?roomResults['clinSkills'].nsf:0)/60000*100))+'%"></div>'+ '</div>'+ '<div style="font-size:9px;font-weight:700;color:#475569;width:32px;text-align:right">'+fmtNSF((roomResults['clinSkills']?roomResults['clinSkills'].nsf:0))+'</div>'+ '</div>'+'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">'+ '<div style="font-size:9px;color:#64748B;width:90px;flex-shrink:0;text-align:right">Teach Lab</div>'+ '<div style="flex:1;height:8px;background:#F1F5F9;border-radius:4px;overflow:hidden">'+ '<div style="height:100%;background:#FECDD3;border:1px solid rgba(0,0,0,.08);width:'+Math.min(100,Math.round((roomResults['teachLab']?roomResults['teachLab'].nsf:0)/60000*100))+'%"></div>'+ '</div>'+ '<div style="font-size:9px;font-weight:700;color:#475569;width:32px;text-align:right">'+fmtNSF((roomResults['teachLab']?roomResults['teachLab'].nsf:0))+'</div>'+ '</div>'+'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">'+ '<div style="font-size:9px;color:#64748B;width:90px;flex-shrink:0;text-align:right">Sim Suite</div>'+ '<div style="flex:1;height:8px;background:#F1F5F9;border-radius:4px;overflow:hidden">'+ '<div style="height:100%;background:#FDE68A;border:1px solid rgba(0,0,0,.08);width:'+Math.min(100,Math.round((roomResults['simSuite']?roomResults['simSuite'].nsf:0)/60000*100))+'%"></div>'+ '</div>'+ '<div style="font-size:9px;font-weight:700;color:#475569;width:32px;text-align:right">'+fmtNSF((roomResults['simSuite']?roomResults['simSuite'].nsf:0))+'</div>'+ '</div>'+'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">'+ '<div style="font-size:9px;color:#64748B;width:90px;flex-shrink:0;text-align:right">Small PBL</div>'+ '<div style="flex:1;height:8px;background:#F1F5F9;border-radius:4px;overflow:hidden">'+ '<div style="height:100%;background:#BAE6FD;border:1px solid rgba(0,0,0,.08);width:'+Math.min(100,Math.round((roomResults['smallPBL']?roomResults['smallPBL'].nsf:0)/60000*100))+'%"></div>'+ '</div>'+ '<div style="font-size:9px;font-weight:700;color:#475569;width:32px;text-align:right">'+fmtNSF((roomResults['smallPBL']?roomResults['smallPBL'].nsf:0))+'</div>'+ '</div>'+'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">'+ '<div style="font-size:9px;color:#64748B;width:90px;flex-shrink:0;text-align:right">OSCE SP</div>'+ '<div style="flex:1;height:8px;background:#F1F5F9;border-radius:4px;overflow:hidden">'+ '<div style="height:100%;background:#C7D2FE;border:1px solid rgba(0,0,0,.08);width:'+Math.min(100,Math.round((roomResults['spExam']?roomResults['spExam'].nsf:0)/60000*100))+'%"></div>'+ '</div>'+ '<div style="font-size:9px;font-weight:700;color:#475569;width:32px;text-align:right">'+fmtNSF((roomResults['spExam']?roomResults['spExam'].nsf:0))+'</div>'+ '</div>'+'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">'+ '<div style="font-size:9px;color:#64748B;width:90px;flex-shrink:0;text-align:right">Exam Center</div>'+ '<div style="flex:1;height:8px;background:#F1F5F9;border-radius:4px;overflow:hidden">'+ '<div style="height:100%;background:#DDD6FE;border:1px solid rgba(0,0,0,.08);width:'+Math.min(100,Math.round(examCenterNSF/60000*100))+'%"></div>'+ '</div>'+ '<div style="font-size:9px;font-weight:700;color:#475569;width:32px;text-align:right">'+fmtNSF(examCenterNSF)+'</div>'+ '</div>'+'</div>';
+  $("#nsfCompareBox").innerHTML=
+    '<div class="nsf-col"><div class="nsf-col-label">Boston Workshop Academic Program</div>'+
+      '<div class="nsf-col-value">121K</div>'+
+      '<div class="nsf-col-sub">121,000 sf academic NSF</div>'+
+      bostonBars+'</div>'+
+    '<div class="nsf-col"><div class="nsf-col-label">Calculated Current</div>'+
+      '<div class="nsf-col-value">'+Math.round(calcV68/1000)+'K</div>'+
+      currentBars+'</div>'+
+    '<div class="nsf-col '+dc+'">'+
+      '<div class="nsf-col-label">Delta</div>'+
+      '<div style="display:flex;align-items:baseline;gap:8px">'+
+        '<div class="nsf-delta-value">'+ds+Math.round(nsfDelta/1000)+'K</div>'+
+        '<div class="nsf-delta-pct">'+ds+nsfPct.toFixed(1)+'%</div>'+
+      '</div></div>';
+
+  // ── Breakdown table ───────────────────────────
+  var fields=["largeTBL","medClass","clinSkills","teachLab","simSuite","spExam","smallPBL","indep"];
+  $("#breakdownHead").innerHTML='<tr><th>Stage</th>'+
+    '<th class="col-large" style="text-align:center">TBL</th>'+
+    '<th class="col-medium" style="text-align:center">Med.</th>'+
+    '<th class="col-medium" style="text-align:center">Skills</th>'+
+    '<th class="col-medium" style="text-align:center">Labs</th>'+
+    '<th class="col-small" style="text-align:center">SIM</th>'+
+    '<th class="col-small" style="text-align:center">PBL</th>'+
+    '<th class="col-indep" style="text-align:center">Study</th>'+
+    '<th>Hrs/wk</th></tr>';
+  var bb=$("#breakdownBody"); bb.innerHTML="";
+  scenario.semesters.forEach(function(s){
+    var sum=fields.reduce(function(a,f){return a+(s[f]||0);},0);
+    var tr=document.createElement("tr");
+    tr.innerHTML='<td style="font-weight:600;font-size:11px">'+esc(s.name)+'</td>'+
+      fields.map(function(f){return '<td class="num">'+Math.round((s[f]||0)/100*40*10)/10+'h</td>';}).join("")+
+      '<td class="num '+(sum===100?'pct-ok':'pct-bad')+'" title="'+sum+'%">'+Math.round(sum/100*40*10)/10+'h</td>';
+    bb.appendChild(tr);
+  });
+
+  renderNBME();
+  renderOSCE();
+  renderNSFRows();
+  renderAdminBox();
 }
-// Focus username field on load
-document.getElementById("loginUser").focus();
-</script></body></html>
+
+// ═══════════════════════════════════════════════
+// EXPORT / IMPORT
+// ═══════════════════════════════════════════════
+function exportStateJSON(){
+  var data={_type:"RUSM_SeatFacultyModel",_version:"3.0",
+    _exported:new Date().toISOString(),
+    activeScenario:ACTIVE_SCENARIO,inputMode:INPUT_MODE,
+    scenarios:JSON.parse(JSON.stringify(SCENARIOS))};
+  var blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement("a"); a.href=url;
+  a.download="SeatFacultyModel_"+new Date().toISOString().slice(0,10)+".json";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+function importStateJSON(evt){
+  var file=evt.target.files[0]; if(!file) return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      var data=JSON.parse(e.target.result);
+      if(!data._type||data._type!=="RUSM_SeatFacultyModel"||!data.scenarios){
+        alert("Not a valid save file."); return;}
+      SCENARIOS=data.scenarios; ACTIVE_SCENARIO=data.activeScenario||0;
+      INPUT_MODE=data.inputMode||"simple";
+      nextScenId=Math.max.apply(null,SCENARIOS.map(function(s){return s.id;}))+1;
+      var allIds=[]; SCENARIOS.forEach(function(sc){sc.semesters.forEach(function(s){allIds.push(s.id);});});
+      nextSemId=Math.max.apply(null,allIds)+1;
+      render(); alert("Loaded "+data.scenarios.length+" scenario(s) from "+data._exported.slice(0,10)+".");
+    }catch(err){alert("Parse error: "+err.message);}
+  };
+  reader.readAsText(file); evt.target.value="";
+}
+
+render();
+
+var _lastIsMobile = isMobileView();
+var _resizeTimer = null;
+window.addEventListener('resize', function(){
+  clearTimeout(_resizeTimer);
+  _resizeTimer = setTimeout(function(){
+    var nowMobile = isMobileView();
+    if(nowMobile !== _lastIsMobile){
+      _lastIsMobile = nowMobile;
+      render();
+    }
+  }, 200);
+});
+
+
+</script>
+</body>
+</html>
